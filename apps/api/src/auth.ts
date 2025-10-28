@@ -1,7 +1,7 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
-import { db } from './db';
+import { db } from './db/db';
 import { users, accounts } from './db/tables';
 import { eq, and } from 'drizzle-orm';
 

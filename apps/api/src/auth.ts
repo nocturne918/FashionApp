@@ -4,6 +4,7 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { db } from './db/db';
 import { users, accounts } from './db/tables';
 import { eq, and } from 'drizzle-orm';
+import { env } from './env';
 
 // Serialize user for session
 passport.serializeUser((user: any, done) => {
@@ -23,13 +24,13 @@ passport.deserializeUser(async (id: string, done) => {
 });
 
 // Google OAuth Strategy
-if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
   passport.use(
     new GoogleStrategy(
       {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${process.env.CALLBACK_URL}/google`,
+        clientID: env.GOOGLE_CLIENT_ID,
+        clientSecret: env.GOOGLE_CLIENT_SECRET,
+        callbackURL: `${env.CALLBACK_URL}/google`,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -80,13 +81,13 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 }
 
 // Facebook OAuth Strategy
-if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+if (env.FACEBOOK_APP_ID && env.FACEBOOK_APP_SECRET) {
   passport.use(
     new FacebookStrategy(
       {
-        clientID: process.env.FACEBOOK_APP_ID,
-        clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: `${process.env.CALLBACK_URL}/facebook`,
+        clientID: env.FACEBOOK_APP_ID,
+        clientSecret: env.FACEBOOK_APP_SECRET,
+        callbackURL: `${env.CALLBACK_URL}/facebook`,
         profileFields: ['id', 'emails', 'name', 'picture'],
       },
       async (accessToken, refreshToken, profile, done) => {

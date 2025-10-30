@@ -1,0 +1,293 @@
+/* ClosetPage.css Layout for the closet page, including header line, mannequin area,
+   right-side icons, and bottom favorites strip. */
+   
+.closet-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  width: 100vw;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+
+/* Main Display Area */
+.closet-main-area {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+
+/* (Background image block removed - not used) */
+
+/* Logo */
+.closet-logo {
+  position: absolute;
+  top: -1rem;
+  left: -1rem;
+  z-index: 10;
+}
+
+.closet-logo a {
+  display: block;
+  text-decoration: none;
+}
+
+.closet-logo .navbar-logo {
+  height: 110px;
+  width: auto;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.closet-logo .navbar-logo:hover {
+  transform: scale(1.05);
+}
+
+/* Separator Line */
+.closet-separator-line {
+  position: absolute;
+  top: 100px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #e5e7eb;
+  z-index: 10;
+}
+
+/* Central Mannequin */
+.mannequin-container {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mannequin {
+  width: 200px;
+  height: 400px;
+  background-color: #f8f8f8;
+  border-radius: 20px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.mannequin::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  background-color: #f8f8f8;
+  border-radius: 50%;
+}
+
+.mannequin::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 20px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+}
+
+/* Right Side Navigation Buttons */
+.nav-right {
+  position: absolute;
+  top: 2rem;
+  right: 8rem; /* nudged a bit further left */
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  z-index: 10;
+}
+
+.nav-right a {
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.search-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-left: 20px;
+}
+
+.favorite-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-top: 4px;
+}
+
+.login-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-left: -3px;
+}
+
+/* Bottom Favorites Strip */
+.favorites-strip {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background-color: #1e3a8a;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 30px;
+  height: 30px;
+  border: none;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #1e3a8a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background-color: #f0f0f0;
+  transform: scale(1.1);
+}
+
+.favorites-thumbnails {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  width: 100%;
+  padding-right: 3rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.favorites-thumbnails::-webkit-scrollbar {
+  height: 8px;
+}
+
+.favorites-thumbnails::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.favorites-thumbnails::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+.favorites-thumbnails::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.favorite-thumbnail {
+  flex-shrink: 0;
+  width: 120px;
+  height: 160px;
+  border: 2px solid white;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  position: relative;
+}
+
+.favorite-thumbnail:hover {
+  transform: scale(1.05);
+}
+
+.thumbnail-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbnail-heart-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #dc2626;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.thumbnail-heart-btn:hover {
+  background: white;
+  transform: scale(1.1);
+}
+
+/* (.closet-main override removed - not used) */
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .closet-logo .navbar-logo {
+    height: 90px;
+  }
+  
+  .mannequin {
+    width: 150px;
+    height: 300px;
+  }
+  
+  .nav-right {
+    gap: 4px;
+  }
+  
+  .search-icon,
+  .favorite-icon,
+  .login-icon {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .favorites-strip {
+    height: 150px;
+  }
+  
+  .favorite-thumbnail {
+    width: 100px;
+    height: 130px;
+  }
+}

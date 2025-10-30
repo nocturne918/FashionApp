@@ -1,0 +1,192 @@
+/* NavBar.css styles for top navigation: left links, centered logo, right-side icons. */
+
+/* Reset page spacing */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+/* NAV WRAPPER */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* NNER GRID */
+.nav-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  /* balanced navbar height */
+  height: 60px; 
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+/* (search mode layout removed - not used) */
+
+/* LEFT LINKS */
+.nav-left {
+  display: flex;
+  gap: 20px;
+  justify-self: start;
+  margin-left: 0px;
+}
+
+.nav-left li {
+  list-style: none;
+}
+
+.nav-left a {
+  text-decoration: none;
+  color: #111;
+  font-weight: 600;
+  font-size: 26px;
+  background-color: #87CEEB; 
+  padding: 12px 20px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.nav-left a:hover {
+  color: #1e3a8a;
+  background-color: #B0E0E6;
+}
+
+/* CENTER LOGO */
+.nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-logo {
+  height: 55px; 
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* (search-mode-left logo positioning removed - not used) */
+
+/* (navbar search bar removed - not used) */
+
+/* (navbar search input styles removed - not used) */
+
+
+/* RIGHT SIDE  */
+.nav-right {
+  justify-self: end;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.nav-right button,
+.nav-right a {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background: none;
+}
+
+.search-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-left: 20px;
+}
+
+.favorite-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-top: 4px;
+}
+
+.closet-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.login-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-left: -3px;
+}
+
+.nav-right .nav-link {
+  text-decoration: none;
+  color: #111;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.nav-right .nav-link:hover {
+  color: #ef4444;
+}
+
+@media (max-width: 768px) {
+  .nav-inner {
+    height: 56px;
+  }
+
+  .navbar-logo {
+    height: 90px;
+  }
+}
+/* --- hard overrides --- */
+.nav .nav-inner { 
+   /* removes all padding to get buttons to edge */
+  padding: 0px !important;                      
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  /* increased height to accommodate larger logo */
+  height: 100px !important;                      
+}
+.nav .nav-left { 
+  justify-self: start; 
+  /* move to the very left edge of screen */
+  margin-left: -100px; 
+  /* no padding - buttons touch the edge */
+  padding-left: 0px; 
+}
+.nav .nav-right { 
+  justify-self: end !important;
+  /* move all icons further to the right edge */ 
+  margin-right: -150px; 
+}
+
+.nav .nav-center img.navbar-logo {
+  /* make logo bigger */
+  height: 110px !important; 
+   /* prevent other rules from capping it */
+  max-height: 110px !important;                 
+  width: auto;
+}

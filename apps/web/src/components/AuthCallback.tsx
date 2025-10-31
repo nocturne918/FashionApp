@@ -4,15 +4,16 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import '../css/AuthCallback.css';
 
+
 function AuthCallback() {
     // Read-only access to the URL query string 
     const [searchParams] = useSearchParams();
     // Router helper for programmatic navigation
     const navigate = useNavigate();
     // UI status shown to the user while we inspect the callback
-    const [status, setStatus] = useState('Processing...');
+    const [status, setStatus] = useState<string>('Processing...');
     // Optional error message if the provider redirected with an error
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         // Parse and validate the callback parameters.
@@ -24,6 +25,7 @@ function AuthCallback() {
                 const state = searchParams.get('state');
 
                 // If the provider returned an error, surface it and stop
+
                 if (error) {
                     setError(`Authorization failed: ${error}`);
                     setStatus('Authorization failed');
@@ -46,10 +48,11 @@ function AuthCallback() {
                     navigate('/');
                 }, 2000);
 
-            } catch (error) {
+            } catch (err) {
                 // Catch-all for unexpected issues 
-                console.error('Callback error:', error);
-                setError(error.message);
+                console.error('Callback error:', err);
+                const message = err instanceof Error ? err.message : String(err);
+                setError(message);
                 setStatus('Authentication failed');
             }
         };

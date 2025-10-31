@@ -13,7 +13,7 @@ function Favorites() {
     const [showFavorites, setShowFavorites] = useState(true); 
 
      // remove item from favorites
-    const handleRemoveFavorite = (movieId) => {
+    const handleRemoveFavorite = (movieId: string | number) => {
         removeFromFavorites(movieId);
     }
     

@@ -1,12 +1,20 @@
-// DummyJSON API - Free JSON API with products
+import type { Product } from '@fashionapp/shared';
 
 const BASE_URL = 'https://dummyjson.com';
 
-// Helper function to format DummyJSON products to our format
-const formatProduct = (product) => ({
+interface DummyProduct {
+    id: number;
+    title: string;
+    price: number;
+    images: string[];
+    brand: string;
+    rating: number;
+}
+
+const formatProduct = (product: DummyProduct): Product => ({
     id: product.id,
     title: product.title,
-    retail_price: product.price,
+    price: product.price,
     image_url: product.images?.[0] || 'https://via.placeholder.com/300',
     brand: product.brand,
     release_date: new Date().toISOString(),
@@ -15,8 +23,7 @@ const formatProduct = (product) => ({
     poster_path: product.images?.[0] || 'https://via.placeholder.com/300'
 });
 
-// Get products with pagination
-export const getProducts = async (limit = 20, skip = 0) => {
+export const getProducts = async (limit = 20, skip = 0): Promise<Product[]> => {
     try {
         console.log('Fetching products from DummyJSON...');
         const response = await fetch(`${BASE_URL}/products?limit=${limit}&skip=${skip}`);
@@ -39,8 +46,7 @@ export const getProducts = async (limit = 20, skip = 0) => {
     }
 };
 
-// Search products
-export const searchProducts = async (query) => {
+export const searchProducts = async (query: string): Promise<Product[]> => {
     try {
         console.log('Searching DummyJSON for:', query);
         const response = await fetch(`${BASE_URL}/products/search?q=${encodeURIComponent(query)}&limit=20`);

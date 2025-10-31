@@ -2,7 +2,13 @@
 
 import '../css/ErrorMessage.css';
 
-function ErrorMessage({ message, onRetry, className = "" }) {
+interface ErrorMessageProps {
+    message: string;
+    onRetry?: () => void;
+    className?: string;
+}
+
+function ErrorMessage({ message, onRetry, className = "" }: ErrorMessageProps) {
     return (
         <div className={`error-message ${className}`}>
             <div className="error-content">

@@ -1,10 +1,16 @@
 // renders a horizontal row of ClothingCard items.
 
-
-import ClothingCard from './ClothingCard.tsx';
+import type { ClothingItem } from '@fashionapp/shared';
+import ClothingCard from './ClothingCard';
 import '../css/ClothingList.css';
 
-function ClothingList({ clothing, title, className = "" }) {
+interface ClothingListProps {
+    clothing: ClothingItem[];
+    title?: string;
+    className?: string;
+}
+
+function ClothingList({ clothing, title, className = "" }: ClothingListProps) {
     if (!clothing || clothing.length === 0) {
         return (
             <div className={`clothing-list-section ${className}`}>

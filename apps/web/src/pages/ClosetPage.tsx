@@ -11,7 +11,7 @@ function ClosetPage() {
     const { favorites, removeFromFavorites } = useClothingContext();
     const [showFavorites, setShowFavorites] = useState(true);
 
-    const handleRemoveFavorite = (clothingId) => {
+    const handleRemoveFavorite = (clothingId: string | number) => {
         removeFromFavorites(clothingId);
     };
 

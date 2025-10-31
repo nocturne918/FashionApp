@@ -5,7 +5,8 @@ import SearchBar from '../components/SearchBar.tsx';
 import ClothingList from '../components/ClothingList.tsx'; 
 import LoadingSpinner from '../components/LoadingSpinner.tsx'; 
 import ErrorMessage from '../components/ErrorMessage.tsx'; 
-import { getProducts, searchProducts } from '../services/api.ts'; 
+import { getProducts, searchProducts } from '../services/api.ts';
+import type { Product } from '@fashionapp/shared';
 import '../css/Search.css'; 
 import fitted from '../assets/fitted.png'; 
 import searchIcon from '../assets/search.png'; 
@@ -18,10 +19,10 @@ function Search() { // Main Search page component
     // Current search text
     const [searchQuery, setSearchQuery] = useState(""); 
     // Full dataset loaded
-    const [clothing, setClothing] = useState([]); 
+    const [clothing, setClothing] = useState<Product[]>([]);
     // Filtered results to render
-    const [filteredClothing, setFilteredClothing] = useState([]); 
-    const [error, setError] = useState(null); 
+    const [filteredClothing, setFilteredClothing] = useState<Product[]>([]);
+    const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(true); 
 
     useEffect(() => { 
@@ -50,13 +51,8 @@ function Search() { // Main Search page component
         if (searchQuery.trim() === '') { // Empty query
             setFilteredClothing(clothing); 
         } else { // Non-empty query
-            const filtered = clothing.filter(clothing => { // Perform case-insensitive match
-                const titleMatch = clothing.title?.toLowerCase().includes(searchQuery.toLowerCase()); // title
-                const tittleMatch = clothing.tittle?.toLowerCase().includes(searchQuery.toLowerCase()); // legacy tittle
-                const originalTitleMatch = clothing.original_title?.toLowerCase().includes(searchQuery.toLowerCase()); // original title
-                const nameMatch = clothing.name?.toLowerCase().includes(searchQuery.toLowerCase()); // name
-                
-                return titleMatch || tittleMatch || originalTitleMatch || nameMatch; // any match qualifies
+            const filtered = clothing.filter((item: Product) => {
+                return item.title?.toLowerCase().includes(searchQuery.toLowerCase());
             });
             
             console.log('Filtered results count:', filtered.length); 
@@ -122,7 +118,7 @@ function Search() { // Main Search page component
                                 <div className="clothing-section"> {/* Recommended row */}
                                     <h2 className="section-title">Recommended for You</h2> 
                                     <div className="clothing-list-horizontal"> {/* Horizontal scroller */}
-                                        {[...clothing.slice(Math.ceil(clothing.length / 2)), ...clothing.slice(Math.ceil(clothing.length / 2))].map((clothing, index)=>( // Duplicate other half
+                                        {[...clothing.slice(Math.ceil(clothing.length / 2)), ...clothing.slice(Math.ceil(clothing.length / 2))].map((clothing: Product, index: number)=>( // Duplicate other half
                                             <ClothingCard key={`recommended-${clothing.id}-${index}`} clothing={clothing}/> // Card item
                                         ))}
                                     </div>
@@ -132,7 +128,7 @@ function Search() { // Main Search page component
                             <div className="clothing-section"> {/* Results section */}
                                 <h2 className="section-title">Search Results ({filteredClothing.length} found)</h2> 
                                 <div className="clothing-list-horizontal"> 
-                                    {filteredClothing.map((clothing, index)=>( // Render filtered cards
+                                    {filteredClothing.map((clothing: Product, index: number)=>( // Render filtered cards
                                         <ClothingCard key={`search-${clothing.id}-${index}`} clothing={clothing}/> // Card item
                                     ))}
                                 </div>

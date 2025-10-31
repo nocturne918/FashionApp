@@ -1,20 +1,22 @@
-import ClothingCard from '../components/ClothingCard.tsx'
+
+import ClothingCard from '../components/ClothingCard.tsx';
 import { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { getProducts } from '../services/api.ts';
+import type { Product } from '@fashionapp/shared';
 import '../css/Home.css';
 import graffiti from '../assets/graffiti.jpg';
 import Footer from '../components/Footer.tsx';
 
-function Home(){
-    const [clothing, setClothing]=useState([]);
-    const [error, setError]=useState(null);
-    const [loading, setLoading]=useState(true);
+function Home() {
+    const [clothing, setClothing] = useState<Product[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
-    const containerRef = useRef(null);
-    const observerRef = useRef(null);
-    const [infiniteProducts, setInfiniteProducts] = useState([]);
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const observerRef = useRef<IntersectionObserver | null>(null);
+    const [infiniteProducts, setInfiniteProducts] = useState<Product[]>([]);
     const enableHomeInfinite = false;
     
 
@@ -92,8 +94,8 @@ function Home(){
             threshold: 0.1
         };
 
-        const callback = (entries) => {
-            entries.forEach(entry => {
+        const callback = (entries: IntersectionObserverEntry[]) => {
+            entries.forEach((entry: IntersectionObserverEntry) => {
                 if (entry.isIntersecting && !loading && hasMore) {
                     loadMore();
                 }

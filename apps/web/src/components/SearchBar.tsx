@@ -1,9 +1,17 @@
 // Controlled search input with clear (✕) button.
 
 import '../css/SearchBar.css';
+import React from 'react';
 
-function SearchBar({ placeholder = "Search for movies...", onSearch, className = "", value = "" }) {
-    const handleInputChange = (e) => {
+interface SearchBarProps {
+  placeholder?: string;
+  onSearch?: (value: string) => void;
+  className?: string;
+  value?: string;
+}
+
+function SearchBar({ placeholder = "Search for movies...", onSearch, className = "", value = "" }: SearchBarProps) {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         if (onSearch) {
             onSearch(value);

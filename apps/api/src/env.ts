@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { existsSync } from 'fs';
 
-// Try multiple possible .env locations
 const possiblePaths = [
   path.resolve(process.cwd(), 'apps/api/.env'),  // From monorepo root
   path.resolve(process.cwd(), '.env'),            // From apps/api
@@ -41,6 +40,9 @@ export const env = {
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
   PORT: process.env.PORT || '3000',
   NODE_ENV: process.env.NODE_ENV || 'development',
+
+  // Email
+  RESEND_API_KEY: process.env.RESEND_API_KEY || '',
 } as const;
 
 // Validate required environment variables

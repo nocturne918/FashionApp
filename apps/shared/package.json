@@ -2,7 +2,7 @@
   "name": "@fashionapp/shared",
   "private": true,
   "version": "0.1.0",
-  "main": "dist/index.js",
+  "main": "dist/index.ts",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.build.json"

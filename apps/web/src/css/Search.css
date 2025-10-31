@@ -177,7 +177,7 @@
   margin: 0;
 }
 
-/* removed legacy search form/results styles not used by Search.jsx */
+/* removed legacy search form/results styles not used by Search.tsx */
 
 .clothing-list-horizontal {
   display: flex;

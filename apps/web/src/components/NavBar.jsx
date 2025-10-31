@@ -1,6 +1,8 @@
 // Main site navigation bar used across pages.
 
 import {Link} from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import ProfileMenu from './ProfileMenu';
 import '../css/NavBar.css';
 import fitted from '../assets/fitted.png';
 import searchIcon from '../assets/search.png';
@@ -9,6 +11,8 @@ import closetIcon from '../assets/closet.png';
 import loginIcon from '../assets/login.png';
 
 function NavBar(){
+    const { isAuthenticated } = useAuth();
+
     return(
         <header className='nav'>
          <nav className="nav-inner">
@@ -38,9 +42,13 @@ function NavBar(){
           <Link to="/closet" aria-label="Bag">
             <img src={closetIcon} alt="Bag" className="closet-icon" />
           </Link>
-          <Link to="/login" aria-label="Login">
-            <img src={loginIcon} alt="Login" className="login-icon" />
-          </Link>
+          {isAuthenticated ? (
+            <ProfileMenu />
+          ) : (
+            <Link to="/login" aria-label="Login">
+              <img src={loginIcon} alt="Login" className="login-icon" />
+            </Link>
+          )}
         </div>
     </nav>
     </header>

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { getCurrentUser } from '../services/authApi';
 import '../css/AuthCallback.css';
 
 function AuthCallback() {
@@ -9,6 +11,7 @@ function AuthCallback() {
     const [searchParams] = useSearchParams();
     // Router helper for programmatic navigation
     const navigate = useNavigate();
+    const { setAuthToken, setAuthUser } = useAuth();
     // UI status shown to the user while we inspect the callback
     const [status, setStatus] = useState('Processing...');
     // Optional error message if the provider redirected with an error
@@ -18,44 +21,66 @@ function AuthCallback() {
         // Parse and validate the callback parameters.
         const handleCallback = async () => {
             try {
-                // Typical OAuth-style params; kept for compatibility
-                const code = searchParams.get('code');
-                const error = searchParams.get('error');
-                const state = searchParams.get('state');
+                // Check for JWT token from OAuth callback
+                const token = searchParams.get('token');
+                const errorParam = searchParams.get('error');
 
                 // If the provider returned an error, surface it and stop
-                if (error) {
-                    setError(`Authorization failed: ${error}`);
+                if (errorParam) {
+                    setError(`Authorization failed: ${errorParam}`);
                     setStatus('Authorization failed');
                     return;
                 }
 
-                // If no code is present, nothing to process
-                if (!code) {
-                    setError('No code received');
+                // If no token is present, nothing to process
+                if (!token) {
+                    setError('No authentication token received');
                     setStatus('Authorization failed');
+                    setTimeout(() => {
+                        navigate('/login');
+                    }, 3000);
                     return;
                 }
 
-                // We no longer exchange codes for tokens in the client.
-                // Instead we confirm the redirect worked and inform the user.
-                setStatus('API Key authentication is now active');
+                // Store the token
+                setAuthToken(token);
                 
-                //redirect to the homepage 
-                setTimeout(() => {
-                    navigate('/');
-                }, 2000);
+                // Fetch user info with the token
+                try {
+                    const userData = await getCurrentUser(token);
+                    if (userData.user) {
+                        setAuthUser(userData.user);
+                        setStatus('Authentication successful!');
+                        
+                        // Redirect to the homepage after success
+                        setTimeout(() => {
+                            navigate('/');
+                        }, 1500);
+                    } else {
+                        throw new Error('No user data received');
+                    }
+                } catch (userError) {
+                    console.error('Error fetching user:', userError);
+                    setError('Failed to retrieve user information');
+                    setStatus('Authentication incomplete');
+                    setTimeout(() => {
+                        navigate('/login');
+                    }, 3000);
+                }
 
             } catch (error) {
                 // Catch-all for unexpected issues 
                 console.error('Callback error:', error);
-                setError(error.message);
+                setError(error.message || 'An unexpected error occurred');
                 setStatus('Authentication failed');
+                setTimeout(() => {
+                    navigate('/login');
+                }, 3000);
             }
         };
 
         handleCallback();
-    }, [searchParams, navigate]);
+    }, [searchParams, navigate, setAuthToken, setAuthUser]);
 
     //Shows an error block if present; otherwise a success message
     

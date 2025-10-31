@@ -1,0 +1,68 @@
+.profile-hover-card {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  width: 280px;
+  z-index: 1000;
+  border: 1px solid #e5e7eb;
+}
+
+.profile-hover-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.profile-hover-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.profile-hover-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-hover-name {
+  font-weight: 600;
+  font-size: 16px;
+  color: #111827;
+}
+
+.profile-hover-email {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.profile-hover-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.profile-hover-btn {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.view-profile-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
+}

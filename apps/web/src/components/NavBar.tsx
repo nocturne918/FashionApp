@@ -1,14 +1,20 @@
 // Main site navigation bar used across pages.
 
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import { useState } from 'react';
 import '../css/NavBar.css';
+import '../css/ProfileHoverCard.css';
+import ProfileHoverCard from './ProfileHoverCard';
 import fitted from '../assets/fitted.png';
 import searchIcon from '../assets/search.png';
 import favoriteIcon from '../assets/favorite.png';
 import closetIcon from '../assets/closet.png';
 import loginIcon from '../assets/login.png';
 
-function NavBar(){
+function NavBar() {
+  const { isAuthenticated, user, logout } = useAuth();
+  const [isHovering, setIsHovering] = useState(false);
     return(
         <header className='nav'>
          <nav className="nav-inner">
@@ -38,9 +44,20 @@ function NavBar(){
           <Link to="/closet" aria-label="Bag">
             <img src={closetIcon} alt="Bag" className="closet-icon" />
           </Link>
-          <Link to="/login" aria-label="Login">
-            <img src={loginIcon} alt="Login" className="login-icon" />
-          </Link>
+          {isAuthenticated && user ? (
+            <div 
+              className="user-menu"
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+            >
+              <img src={user.avatar || `https://avatar.vercel.sh/${user.email}.png`} alt="User Avatar" className="login-icon" />
+              {isHovering && <ProfileHoverCard user={user} onLogout={logout} />}
+            </div>
+          ) : (
+            <Link to="/login" aria-label="Login">
+              <img src={loginIcon} alt="Login" className="login-icon" />
+            </Link>
+          )}
         </div>
     </nav>
     </header>

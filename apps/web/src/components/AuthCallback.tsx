@@ -16,48 +16,25 @@ function AuthCallback() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        // Parse and validate the callback parameters.
-        const handleCallback = async () => {
-            try {
-                // Typical OAuth-style params; kept for compatibility
-                const code = searchParams.get('code');
-                const error = searchParams.get('error');
-                const state = searchParams.get('state');
+        const token = searchParams.get('token');
+        const error = searchParams.get('error');
 
-                // If the provider returned an error, surface it and stop
+        if (error) {
+            setError(`Authorization failed: ${error}`);
+            setStatus('Authentication failed');
+            return;
+        }
 
-                if (error) {
-                    setError(`Authorization failed: ${error}`);
-                    setStatus('Authorization failed');
-                    return;
-                }
-
-                // If no code is present, nothing to process
-                if (!code) {
-                    setError('No code received');
-                    setStatus('Authorization failed');
-                    return;
-                }
-
-                // We no longer exchange codes for tokens in the client.
-                // Instead we confirm the redirect worked and inform the user.
-                setStatus('API Key authentication is now active');
-                
-                //redirect to the homepage 
-                setTimeout(() => {
-                    navigate('/');
-                }, 2000);
-
-            } catch (err) {
-                // Catch-all for unexpected issues 
-                console.error('Callback error:', err);
-                const message = err instanceof Error ? err.message : String(err);
-                setError(message);
-                setStatus('Authentication failed');
-            }
-        };
-
-        handleCallback();
+        if (token) {
+            localStorage.setItem('authToken', token);
+            setStatus('Authentication successful! Redirecting...');
+            setTimeout(() => {
+                navigate('/');
+            }, 2000);
+        } else {
+            setError('No token received from authentication provider.');
+            setStatus('Authentication failed');
+        }
     }, [searchParams, navigate]);
 
     //Shows an error block if present; otherwise a success message

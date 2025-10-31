@@ -1,7 +1,7 @@
 
 import './css/App.css'
 import Home from './pages/Home';
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Favorites from './pages/Favorites';
 import Search from './pages/Search';
 import MenPage from './pages/MenPage';
@@ -13,8 +13,8 @@ import Login from './pages/Login';
 import AuthCallback from './components/AuthCallback';
 import NavBar from './components/NavBar.tsx';
 import { ClothingProvider } from './contexts/ClothingContext.tsx';
+import { AuthProvider } from './contexts/AuthContext.tsx';
 import graffiti from './assets/graffiti.jpg';
-import { useState } from 'react';
 
 function App() {
   const location = useLocation();
@@ -24,7 +24,8 @@ function App() {
   const isLoginPage = location.pathname === '/login';
 
   return (
-    <ClothingProvider> 
+    <AuthProvider>
+      <ClothingProvider> 
       {!isSearchPage && !isClosetPage && !isFavoritesPage && !isLoginPage && <NavBar />}
       {!isSearchPage && !isClosetPage && !isFavoritesPage && !isLoginPage && location.pathname !== '/men' && location.pathname !== '/women' && location.pathname !== '/kids' && location.pathname !== '/brands' && (
         <div className="graffiti-section">
@@ -47,6 +48,7 @@ function App() {
         </Routes>
       </main>
     </ClothingProvider>
+    </AuthProvider>
   );
 }
 

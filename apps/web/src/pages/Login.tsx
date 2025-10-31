@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from '../contexts/AuthContext';
 import fitted from "../assets/fitted.png";
 import searchIcon from "../assets/search.png";
 import favoriteIcon from "../assets/favorite.png";
@@ -19,11 +20,17 @@ function Login() {
     password: "",
   });
   const [signupFormData, setSignupFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     password: "",
   });
+  const [signupLoading, setSignupLoading] = useState<boolean>(false);
+  const [signupError, setSignupError] = useState<string | null>(null);
+  const [signupSuccess, setSignupSuccess] = useState<boolean>(false);
+  const [signupStep, setSignupStep] = useState<'start' | 'verify' | 'complete'>('start');
+  const [signupCode, setSignupCode] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const { login, loginWithGoogle, loginWithFacebook } = useAuth();
 
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginFormData({
@@ -41,16 +48,76 @@ function Login() {
     });
   };
 
-  const handleLoginSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Login attempt:", loginFormData);
-    // Add login logic here
+    setLoginError(null);
+    try {
+      await login(loginFormData.email, loginFormData.password);
+    } catch (err: any) {
+      setLoginError(err.message || 'Login failed');
+    }
   };
 
-  const handleSignupSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSignupSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Signup attempt:", signupFormData);
-    // Add signup logic here
+    setSignupLoading(true);
+    setSignupError(null);
+    setSignupSuccess(false);
+    try {
+      if (signupStep === 'start') {
+        const res = await fetch('/api/auth/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: signupFormData.name,
+            email: signupFormData.email,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Failed to start signup');
+        }
+        setSignupSuccess(true);
+        setSignupStep('verify');
+      } else if (signupStep === 'verify') {
+        const res = await fetch('/api/auth/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: signupFormData.email,
+            code: signupCode,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Invalid code');
+        }
+        setSignupSuccess(true);
+        setSignupStep('complete');
+      } else if (signupStep === 'complete') {
+        const res = await fetch('/api/auth/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: signupFormData.email,
+            password: signupFormData.password,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+        }
+        setSignupSuccess(true);
+        // Optionally, redirect to login or dashboard
+        alert('Signup complete! You can now log in.');
+        setShowSignup(false);
+        setSignupStep('start');
+        setSignupCode('');
+      }
+    } catch (err: any) {
+      setSignupError(err.message || 'Signup failed');
+    } finally {
+      setSignupLoading(false);
+    }
   };
 
   return (
@@ -120,89 +187,107 @@ function Login() {
               <h1 className="login-title">Sign Up</h1>
 
               <form className="login-form" onSubmit={handleSignupSubmit}>
-                <div className="form-group">
-                  <label htmlFor="firstName">First Name*</label>
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    placeholder="First Name*"
-                    value={signupFormData.firstName}
-                    onChange={handleSignupChange}
-                    required
-                  />
-                </div>
+                {signupStep === 'start' && (
+                  <>
+                    <div className="form-group">
+                      <label htmlFor="signup-name">Name*</label>
+                      <input
+                        type="text"
+                        id="signup-name"
+                        name="name"
+                        placeholder="Name*"
+                        value={signupFormData.name}
+                        onChange={handleSignupChange}
+                        required
+                      />
+                    </div>
 
-                <div className="form-group">
-                  <label htmlFor="lastName">Last Name*</label>
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    placeholder="Last Name*"
-                    value={signupFormData.lastName}
-                    onChange={handleSignupChange}
-                    required
-                  />
-                </div>
+                    <div className="form-group">
+                      <label htmlFor="signup-email">Email Address*</label>
+                      <input
+                        type="email"
+                        id="signup-email"
+                        name="email"
+                        placeholder="Email Address*"
+                        value={signupFormData.email}
+                        onChange={handleSignupChange}
+                        required
+                      />
+                    </div>
+                  </>
+                )}
 
-                <div className="form-group">
-                  <label htmlFor="signup-email">Email Address*</label>
-                  <input
-                    type="email"
-                    id="signup-email"
-                    name="email"
-                    placeholder="Email Address*"
-                    value={signupFormData.email}
-                    onChange={handleSignupChange}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="signup-password">Password*</label>
-                  <div className="password-input-wrapper">
+                {signupStep === 'verify' && (
+                  <div className="form-group">
+                    <label htmlFor="signup-code">Verification Code*</label>
                     <input
-                      type={showPassword ? "text" : "password"}
-                      id="signup-password"
-                      name="password"
-                      placeholder="Password*"
-                      value={signupFormData.password}
-                      onChange={handleSignupChange}
+                      type="text"
+                      id="signup-code"
+                      name="code"
+                      placeholder="Enter 6-digit code*"
+                      value={signupCode}
+                      onChange={(e) => setSignupCode(e.target.value)}
                       required
                     />
-                    <button
-                      type="button"
-                      className="password-toggle"
-                      onClick={() => setShowPassword(!showPassword)}
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        {showPassword ? (
-                          <>
-                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
-                            <line x1="1" y1="1" x2="23" y2="23" />
-                          </>
-                        ) : (
-                          <>
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                            <circle cx="12" cy="12" r="3" />
-                          </>
-                        )}
-                      </svg>
-                    </button>
                   </div>
-                </div>
+                )}
 
-                <button type="submit" className="signup-submit-btn">
-                  Sign Up
+                {signupStep === 'complete' && (
+                  <div className="form-group">
+                    <label htmlFor="signup-password">Password*</label>
+                    <div className="password-input-wrapper">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        id="signup-password"
+                        name="password"
+                        placeholder="Password*"
+                        value={signupFormData.password}
+                        onChange={handleSignupChange}
+                        required
+                      />
+                      <button
+                        type="button"
+                        className="password-toggle"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          {showPassword ? (
+                            <>
+                              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                              <line x1="1" y1="1" x2="23" y2="23" />
+                            </>
+                          ) : (
+                            <>
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                              <circle cx="12" cy="12" r="3" />
+                            </>
+                          )}
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {signupError && <div className="error-message">{signupError}</div>}
+                {signupSuccess && signupStep === 'start' && <div className="success-message">Verification code sent! Check your email.</div>}
+                {signupSuccess && signupStep === 'verify' && <div className="success-message">Code verified! Set your password.</div>}
+
+                <button type="submit" className="signup-submit-btn" disabled={signupLoading}>
+                  {signupLoading ? 'Processing...' : signupStep === 'start' ? 'Send Code' : signupStep === 'verify' ? 'Verify Code' : 'Complete Signup'}
                 </button>
+
+                {signupStep !== 'start' && (
+                  <button type="button" className="link-button" onClick={() => setSignupStep('start')}>
+                    Back
+                  </button>
+                )}
 
                 <div className="or-divider">
                   <span>OR</span>
@@ -211,12 +296,13 @@ function Login() {
                 <p className="signup-with-text">Sign up with</p>
 
                 <div className="social-login-buttons">
-                  <button type="button" className="social-btn">
+                  <button type="button" className="social-btn" onClick={loginWithGoogle}>
                     <img src={googleLogo} alt="Google" />
                   </button>
                   <button
                     type="button"
                     className="social-btn social-btn-facebook"
+                    onClick={loginWithFacebook}
                   >
                     <img
                       src={facebookLogo}
@@ -287,6 +373,8 @@ function Login() {
                   Log In
                 </button>
 
+                {loginError && <div className="error-message">{loginError}</div>}
+
                 <div className="or-divider">
                   <span>OR</span>
                 </div>
@@ -294,12 +382,13 @@ function Login() {
                 <p className="signup-with-text">Log in with</p>
 
                 <div className="social-login-buttons">
-                  <button type="button" className="social-btn">
+                  <button type="button" className="social-btn" onClick={loginWithGoogle}>
                     <img src={googleLogo} alt="Google" />
                   </button>
                   <button
                     type="button"
                     className="social-btn social-btn-facebook"
+                    onClick={loginWithFacebook}
                   >
                     <img
                       src={facebookLogo}

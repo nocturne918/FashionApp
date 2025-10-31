@@ -50,7 +50,16 @@ function NavBar() {
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
             >
-              <img src={user.avatar || `https://avatar.vercel.sh/${user.email}.png`} alt="User Avatar" className="login-icon" />
+              <img 
+                src={user.avatar || `https://avatar.vercel.sh/${user.email}.png`} 
+                alt="User Avatar" 
+                className="login-icon" 
+                onError={(e) => {
+                  // Fallback to default avatar if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://avatar.vercel.sh/${user.email}.png`;
+                }}
+              />
               {isHovering && <ProfileHoverCard user={user} onLogout={logout} />}
             </div>
           ) : (

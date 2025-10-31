@@ -57,12 +57,40 @@
   text-align: center;
 }
 
-.view-profile-btn {
+.profile-hover-actions .view-profile-btn {
   background-color: #007bff;
   color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  transition: background-color 0.2s ease;
 }
 
-.logout-btn {
+.profile-hover-actions .view-profile-btn:hover {
+  background-color: #0056b3;
+}
+
+.profile-hover-actions .logout-btn {
   background-color: #dc3545;
   color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  transition: background-color 0.2s ease;
+}
+
+.profile-hover-actions .logout-btn:hover {
+  background-color: #c82333;
 }

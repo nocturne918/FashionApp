@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from '../contexts/AuthContext';
 import fitted from "../assets/fitted.png";
 import searchIcon from "../assets/search.png";
 import favoriteIcon from "../assets/favorite.png";
@@ -29,8 +28,9 @@ function Login() {
   const [signupSuccess, setSignupSuccess] = useState<boolean>(false);
   const [signupStep, setSignupStep] = useState<'start' | 'verify' | 'complete'>('start');
   const [signupCode, setSignupCode] = useState('');
+  const [loginLoading, setLoginLoading] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const { login, loginWithGoogle, loginWithFacebook } = useAuth();
+
 
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLoginFormData({
@@ -48,13 +48,33 @@ function Login() {
     });
   };
 
-    const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoginLoading(true);
     setLoginError(null);
     try {
-      await login(loginFormData.email, loginFormData.password);
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: loginFormData.email,
+          password: loginFormData.password,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Login failed');
+      }
+      // Store token if provided
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+      }
+      // Redirect to home
+      window.location.href = '/';
     } catch (err: any) {
       setLoginError(err.message || 'Login failed');
+    } finally {
+      setLoginLoading(false);
     }
   };
 
@@ -105,6 +125,7 @@ function Login() {
         });
         const data = await res.json();
         if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Failed to complete signup');
         }
         setSignupSuccess(true);
         // Optionally, redirect to login or dashboard
@@ -296,13 +317,13 @@ function Login() {
                 <p className="signup-with-text">Sign up with</p>
 
                 <div className="social-login-buttons">
-                  <button type="button" className="social-btn" onClick={loginWithGoogle}>
+                  <button type="button" className="social-btn" onClick={() => window.location.href = '/api/auth/google'}>
                     <img src={googleLogo} alt="Google" />
                   </button>
                   <button
                     type="button"
                     className="social-btn social-btn-facebook"
-                    onClick={loginWithFacebook}
+                    onClick={() => window.location.href = '/api/auth/facebook'}
                   >
                     <img
                       src={facebookLogo}
@@ -369,8 +390,8 @@ function Login() {
                   </Link>
                 </div>
 
-                <button type="submit" className="login-btn">
-                  Log In
+                <button type="submit" className="login-btn" disabled={loginLoading}>
+                  {loginLoading ? 'Logging in...' : 'Log In'}
                 </button>
 
                 {loginError && <div className="error-message">{loginError}</div>}
@@ -382,13 +403,13 @@ function Login() {
                 <p className="signup-with-text">Log in with</p>
 
                 <div className="social-login-buttons">
-                  <button type="button" className="social-btn" onClick={loginWithGoogle}>
+                  <button type="button" className="social-btn" onClick={() => window.location.href = '/api/auth/google'}>
                     <img src={googleLogo} alt="Google" />
                   </button>
                   <button
                     type="button"
                     className="social-btn social-btn-facebook"
-                    onClick={loginWithFacebook}
+                    onClick={() => window.location.href = '/api/auth/facebook'}
                   >
                     <img
                       src={facebookLogo}

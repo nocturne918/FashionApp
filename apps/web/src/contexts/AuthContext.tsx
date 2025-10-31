@@ -36,7 +36,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
           if (res.ok) {
             const data = await res.json();
-            setUser(data.user);
+            setUser({
+              id: data.user.id,
+              email: data.user.email,
+              name: data.user.name,
+              avatar: data.user.avatar || `https://avatar.vercel.sh/${data.user.email}.png`
+            });
           } else {
             throw new Error('Failed to verify user');
           }
@@ -66,7 +71,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const data = await res.json();
     const { token, user } = data;
     localStorage.setItem('authToken', token);
-    setUser(user);
+    setUser({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      avatar: user.avatar || `https://avatar.vercel.sh/${user.email}.png`
+    });
     window.location.href = '/';
   };
 

@@ -6,6 +6,7 @@ import { db } from '../db/db';
 import { users, accounts, pendingVerifications } from '../db/tables';
 import { eq, and } from 'drizzle-orm';
 import { env } from '../env';
+import { authenticateJWT } from '../middleware/auth';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Strategy as LocalStrategy } from 'passport-local';
@@ -74,6 +75,9 @@ passport.deserializeUser(async (id: string, done) => {
     const user = await db.query.users.findFirst({
       where: eq(users.id, id),
     });
+    if (!user) {
+      return done(null, false);
+    }
     done(null, user);
   } catch (error) {
     done(error, null);
@@ -326,5 +330,14 @@ router.post('/logout', (req, res) => {
   });
 });
 
+
+// Get current user (me)
+router.get('/me', authenticateJWT, (req, res) => {
+  if (req.user) {
+    res.json({ user: req.user });
+  } else {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+});
 
 export default router;

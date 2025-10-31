@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import '../css/ProfileHoverCard.css';
 
 interface User {
   id: string;
@@ -24,8 +25,8 @@ const ProfileHoverCard: React.FC<ProfileHoverCardProps> = ({ user, onLogout }) =
         </div>
       </div>
       <div className="profile-hover-actions">
-        <Link to="/profile" className="profile-hover-btn view-profile-btn">View Profile</Link>
-        <button onClick={onLogout} className="profile-hover-btn logout-btn">Logout</button>
+        <Link to="/profile" className="view-profile-btn">View Profile</Link>
+        <button onClick={onLogout} className="logout-btn">Logout</button>
       </div>
     </div>
   );

@@ -1,14 +1,13 @@
 {
   "name": "@fashionapp/shared",
   "private": true,
-  "version": "0.1.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.json"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
     "zod": "^3.22.2"
   }
 }

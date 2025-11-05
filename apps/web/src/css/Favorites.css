@@ -24,7 +24,7 @@
 .favorites-header::after {
   content: '';
   position: absolute;
-  bottom: calc(100px - 4rem); /* Moved a little bit lower */
+  bottom: calc(100px - 5rem); /* Moved a little bit lower */
   left: -1rem; /* Start from logo's left position */
   right: 0;
   height: 1px;
@@ -41,38 +41,81 @@
 }
 
 .header-logo {
-  position: absolute;
-  left: -1rem;
-  top: -2.5rem;
-  padding: 1rem;
+  display: flex !important;
+  align-items: center !important;
+  margin-left: -100px !important;
+  margin-top: -10px !important;
+  position: absolute !important;
+  left: 68px !important;
+  top: 42% !important;
+  transform: translateY(-50%) !important;
+  z-index: 10 !important;
+  pointer-events: auto !important;
+  padding: 0 !important;
 }
 
 .header-logo .navbar-logo {
-  height: 110px;
-  width: auto;
+  height: 110px !important;
+  max-height: 110px !important;
+  width: auto !important;
+  position: static !important;
+  left: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
 }
 
-.header-icons {
-  position: absolute;
-  right: 0;
-  top: -1rem;
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  padding: 1rem;
+.header-logo a {
+  display: block !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  text-decoration: none !important;
+}
+
+.header-icons.nav-right {
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  justify-self: end !important;
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
+  padding: 0 !important;
+  margin-top: 0 !important;
+  margin-right: -10px !important;
 }
 
 .header-icons a {
   text-decoration: none;
 }
 
-.search-icon,
-.favorite-icon,
-.closet-icon,
+.search-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-left: 20px;
+}
+
+.favorite-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  margin-top: 4px;
+}
+
+.closet-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
 .login-icon {
   width: 40px;
   height: 40px;
   object-fit: contain;
+  margin-left: -3px;
 }
 
 /* Main Layout */
@@ -290,16 +333,16 @@
 }
 
 .thumbnail-heart-btn.active svg {
-  color: #ff4757;
+  color: #0F2A54;
 }
 
 .thumbnail-heart-btn.active:hover {
   background-color: rgba(255, 255, 255, 1);
-  border-color: #ff3449;
+  border-color: #0F2A54;
 }
 
 .thumbnail-heart-btn.active:hover svg {
-  color: #ff3449;
+  color: #0F2A54;
 }
 
 /* Responsive Design */

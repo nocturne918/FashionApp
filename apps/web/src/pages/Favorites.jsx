@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useClothingContext } from '../contexts/ClothingContext'; 
 import fitted from '../assets/fitted.png'; 
+import searchIcon from '../assets/search.png';
 import favoriteIcon from '../assets/favorite.png'; 
 import closetIcon from '../assets/closet.png'; 
 import loginIcon from '../assets/login.png'; 
@@ -31,7 +32,10 @@ function Favorites() {
                         </Link>
                     </div>
                     
-                    <div className="header-icons"> {/* right-side action icons */}
+                    <div className="header-icons nav-right"> {/* right-side action icons */}
+                        <Link to="/search" aria-label="Search">
+                            <img src={searchIcon} alt="Search" className="search-icon" />
+                        </Link>
                         <Link to="/favorites" aria-label="Favorites">
                             <img src={favoriteIcon} alt="Favorites" className="favorite-icon" />
                         </Link>

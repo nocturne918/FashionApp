@@ -44,18 +44,18 @@ html, body {
 
 .nav-left a {
   text-decoration: none;
-  color: #111;
+  color: #0F2A54;
   font-weight: 600;
   font-size: 26px;
-  background-color: #87CEEB; 
+  background-color: transparent; 
   padding: 12px 20px;
   border-radius: 6px;
-  transition: background-color 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .nav-left a:hover {
-  color: #1e3a8a;
-  background-color: #B0E0E6;
+  color: #BCE0F7;
+  background-color: transparent;
 }
 
 /* CENTER LOGO */
@@ -73,6 +73,12 @@ html, body {
   width: auto;
   display: block;
   object-fit: contain;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.navbar-logo:hover {
+  opacity: 0.7;
+  filter: brightness(1.2) contrast(1.1);
 }
 
 /* (search-mode-left logo positioning removed - not used) */
@@ -162,7 +168,9 @@ html, body {
   }
 }
 /* --- hard overrides --- */
-.nav .nav-inner { 
+.nav .nav-inner,
+.nav .search-nav-inner,
+.nav .login-nav-inner { 
    /* removes all padding to get buttons to edge */
   padding: 0px !important;                      
   display: grid !important;
@@ -177,10 +185,14 @@ html, body {
   /* no padding - buttons touch the edge */
   padding-left: 0px; 
 }
+/* Universal right icon positioning - applies to all pages */
 .nav .nav-right { 
   justify-self: end !important;
-  /* move all icons further to the right edge */ 
-  margin-right: -150px; 
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
+  margin-top: 0 !important;
+  margin-right: -100px !important;
 }
 
 .nav .nav-center img.navbar-logo {

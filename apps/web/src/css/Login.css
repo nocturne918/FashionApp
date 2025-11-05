@@ -11,31 +11,31 @@
 }
 
 .login-nav-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 100px;
-  padding: 0px;
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  align-items: center !important;
+  height: 100px !important;
+  padding: 0px !important;
   max-width: none;
   margin: 0;
-  padding: 0px;
   width: 100%;
+  position: relative;
 }
 
 .login-nav-left {
-  margin-left: -100px;
-  margin-top: -10px;
+  margin-left: -120px;
+  margin-top: -20px;
 }
 
 .login-nav-left .navbar-logo {
   height: 110px !important;
 }
 
-.nav-right {
-  gap: 6px;
-  align-items: flex-start;
-  margin-top: -10px;
-  margin-right: -80px;
+/* Login page nav-right - move icons up */
+.login-nav .nav-right {
+  position: relative !important;
+  top: -30px !important;
+  margin-top: 0 !important;
 }
 
 .nav-right button, .nav-right a {
@@ -97,6 +97,67 @@
   width: 100%;
   max-width: 450px;
   border: 1px solid #e0e0e0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Black Overlay */
+.login-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../assets/graffiti.jpg');
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  z-index: 10;
+  border-radius: 12px;
+}
+
+.overlay-btn {
+  background-color: white;
+  color: #111;
+  border: none;
+  padding: 1rem 3rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  min-width: 200px;
+  outline: none;
+}
+
+.overlay-btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.overlay-btn:hover {
+  background-color: #87CEEB;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(135, 206, 235, 0.3);
+}
+
+.overlay-btn:active {
+  transform: translateY(0);
+}
+
+.login-btn-overlay {
+  background-color: white;
+}
+
+.login-btn-overlay:hover {
+  background-color: #87CEEB;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(135, 206, 235, 0.3);
 }
 
 .login-title {

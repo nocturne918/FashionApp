@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   width: 100vw;
   margin: 0 !important;
   padding: 0 !important;
@@ -24,6 +24,7 @@
   width: 100%;
   margin: 0 !important;
   padding: 0 !important;
+  overflow: visible;
   box-sizing: border-box;
 }
 
@@ -32,8 +33,8 @@
 /* Logo */
 .closet-logo {
   position: absolute;
-  top: -1rem;
-  left: -1rem;
+  top: -0.9rem;
+  left: -32px;
   z-index: 10;
 }
 
@@ -106,18 +107,21 @@
   border-radius: 50%;
 }
 
-/* Right Side Navigation Buttons */
-.nav-right {
-  position: absolute;
-  top: 2rem;
-  right: 8rem; /* nudged a bit further left */
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  z-index: 10;
+/* Right Side Navigation Buttons - match homepage positioning */
+.closet-main-area .nav-right {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  justify-self: end !important;
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
+  z-index: 10 !important;
+  margin-top: 0 !important;
+  margin-right: 55px !important;
 }
 
-.nav-right a {
+.closet-main-area .nav-right a {
   background: none;
   border: none;
   cursor: pointer;
@@ -125,21 +129,27 @@
   color: inherit;
 }
 
-.search-icon {
+.closet-main-area .search-icon {
   width: 40px;
   height: 40px;
   object-fit: contain;
   margin-left: 20px;
 }
 
-.favorite-icon {
+.closet-main-area .favorite-icon {
   width: 40px;
   height: 40px;
   object-fit: contain;
   margin-top: 4px;
 }
 
-.login-icon {
+.closet-main-area .closet-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.closet-main-area .login-icon {
   width: 40px;
   height: 40px;
   object-fit: contain;
@@ -247,7 +257,7 @@
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  color: #dc2626;
+  color: #0F2A54;
   cursor: pointer;
   transition: all 0.2s ease;
   z-index: 5;
@@ -271,13 +281,13 @@
     height: 300px;
   }
   
-  .nav-right {
+  .closet-main-area .nav-right {
     gap: 4px;
   }
   
-  .search-icon,
-  .favorite-icon,
-  .login-icon {
+  .closet-main-area .search-icon,
+  .closet-main-area .favorite-icon,
+  .closet-main-area .login-icon {
     width: 35px;
     height: 35px;
   }

@@ -11,31 +11,31 @@
 }
 
 .login-nav-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 100px;
-  padding: 0px;
+  display: grid !important;
+  grid-template-columns: auto 1fr auto !important;
+  align-items: center !important;
+  height: 100px !important;
+  padding: 0px !important;
   max-width: none;
   margin: 0;
-  padding: 0px;
   width: 100%;
+  position: relative;
 }
 
 .login-nav-left {
-  margin-left: -100px;
-  margin-top: -10px;
+  margin-left: -120px;
+  margin-top: -20px;
 }
 
 .login-nav-left .navbar-logo {
   height: 110px !important;
 }
 
-.nav-right {
-  gap: 6px;
-  align-items: flex-start;
-  margin-top: -10px;
-  margin-right: -80px;
+/* Login page nav-right - move icons up */
+.login-nav .nav-right {
+  position: relative !important;
+  top: -30px !important;
+  margin-top: 0 !important;
 }
 
 .nav-right button, .nav-right a {
@@ -110,7 +110,7 @@
   bottom: 0;
   background-image: url('../assets/graffiti.jpg');
   background-size: cover;
-  background-position: center upper;
+  background-position: center top;
   background-repeat: no-repeat;
   display: flex;
   flex-direction: column;

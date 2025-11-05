@@ -87,6 +87,9 @@ function Search() { // Main Search page component
                     
                     {/* Right side navigation buttons */}
                     <div className='nav-right'> 
+                        <Link to="/search" aria-label="Search">
+                            <img src={searchIcon} alt="Search" className="search-icon" />
+                        </Link>
                         <Link to="/favorites" aria-label="Favorites"> 
                             <img src={favoriteIcon} alt="Favorites" className="favorite-icon" /> 
                         </Link>

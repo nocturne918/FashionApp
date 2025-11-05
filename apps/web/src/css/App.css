@@ -25,6 +25,10 @@
   flex-direction: column;
 }
 
+.main-content.closet-main {
+  overflow: visible;
+}
+
 .page-placeholder {
   display: flex;
   flex-direction: column;

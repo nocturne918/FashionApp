@@ -26,28 +26,26 @@
   overflow-x: auto;
   width: 100%;
   box-sizing: border-box;
-  scrollbar-width: thin;
-  scrollbar-color: #666 #333;
-  background-color: #87CEEB;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* Internet Explorer 10+ */
+  background-color: transparent !important;
   border-radius: 8px;
 }
 
 .clothing-list-horizontal::-webkit-scrollbar {
-  height: 8px;
+  display: none !important; /* Chrome, Safari, Edge */
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .clothing-list-horizontal::-webkit-scrollbar-track {
-  background: #333;
-  border-radius: 4px;
+  display: none !important;
+  background: transparent !important;
 }
 
 .clothing-list-horizontal::-webkit-scrollbar-thumb {
-  background: #666;
-  border-radius: 4px;
-}
-
-.clothing-list-horizontal::-webkit-scrollbar-thumb:hover {
-  background: #888;
+  display: none !important;
+  background: transparent !important;
 }
 
 .no-clothing {

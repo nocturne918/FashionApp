@@ -33,10 +33,20 @@ html, body {
   overflow-x: auto;
   width: 100%;
   box-sizing: border-box;
-  scrollbar-width: thin;
-  scrollbar-color: #666 #333;
-  background-color: #87CEEB;
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* Internet Explorer 10+ */
+  background-color: transparent !important;
   border-radius: 8px;
+}
+
+/* Ensure no baby blue background on homepage clothing lists */
+.home .clothing-list-horizontal,
+.home .clothing-section .clothing-list-horizontal,
+.home .brand-section .clothing-list-horizontal,
+.home .clothing-container .clothing-list-horizontal,
+.clothing-container .clothing-list-horizontal {
+  background-color: transparent !important;
+  background: transparent !important;
 }
 
 .product-grid {
@@ -50,21 +60,45 @@ html, body {
 }
 
 .clothing-list-horizontal::-webkit-scrollbar {
-  height: 8px;
+  display: none !important; /* Chrome, Safari, Edge */
+  width: 0 !important;
+  height: 0 !important;
 }
 
 .clothing-list-horizontal::-webkit-scrollbar-track {
-  background: #333;
-  border-radius: 4px;
+  display: none !important;
+  background: transparent !important;
 }
 
 .clothing-list-horizontal::-webkit-scrollbar-thumb {
-  background: #666;
-  border-radius: 4px;
+  display: none !important;
+  background: transparent !important;
 }
 
-.clothing-list-horizontal::-webkit-scrollbar-thumb:hover {
-  background: #888;
+/* Ensure scrollbar is hidden on homepage */
+.home .clothing-list-horizontal::-webkit-scrollbar,
+.home .clothing-section .clothing-list-horizontal::-webkit-scrollbar,
+.home .brand-section .clothing-list-horizontal::-webkit-scrollbar,
+.clothing-container .clothing-list-horizontal::-webkit-scrollbar {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+.home .clothing-list-horizontal::-webkit-scrollbar-track,
+.home .clothing-section .clothing-list-horizontal::-webkit-scrollbar-track,
+.home .brand-section .clothing-list-horizontal::-webkit-scrollbar-track,
+.clothing-container .clothing-list-horizontal::-webkit-scrollbar-track {
+  display: none !important;
+  background: transparent !important;
+}
+
+.home .clothing-list-horizontal::-webkit-scrollbar-thumb,
+.home .clothing-section .clothing-list-horizontal::-webkit-scrollbar-thumb,
+.home .brand-section .clothing-list-horizontal::-webkit-scrollbar-thumb,
+.clothing-container .clothing-list-horizontal::-webkit-scrollbar-thumb {
+  display: none !important;
+  background: transparent !important;
 }
 
 .clothing-container {
@@ -105,7 +139,7 @@ html, body {
 
 /* Brand strip under the graffiti */
 .brand-section {
-  padding: 0 0.5rem; /* remove top spacing so it hugs the graffiti image */
+  padding: 0 1rem; /* remove top spacing so it hugs the graffiti image */
   margin-top: 0; /* base spacing; specific adjacency rule handles the gap */
 }
 
@@ -214,29 +248,49 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 0.5rem;
+  padding: 0;
   margin: 0 0 0.75rem 0; /* remove top margin */
+  position: relative;
 }
 
 .brand-title,
 .section-title {
-  color: black;
+  color: #0F2A54;
   font-size: 3rem; /* unified size */
   font-weight: 800;
   letter-spacing: 1px;
   font-family: 'Poppins', sans-serif;
   text-transform: uppercase;
   margin: 0;
+  -webkit-font-smoothing: antialiased;
+  text-shadow: 
+    -2px -2px 0 #BCE0F7,
+    2px -2px 0 #BCE0F7,
+    -2px 2px 0 #BCE0F7,
+    2px 2px 0 #BCE0F7,
+    -1px -1px 0 #BCE0F7,
+    1px -1px 0 #BCE0F7,
+    -1px 1px 0 #BCE0F7,
+    1px 1px 0 #BCE0F7;
 }
 
 .brand-view-all {
-  background: #111;
+  background: #0F2A54;
   color: #fff;
   text-decoration: none;
   padding: 0.5rem 0.9rem;
   border-radius: 6px;
   font-weight: 700;
   font-size: 0.9rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  position: absolute;
+  right: 1rem;
+  flex-shrink: 0;
+}
+
+.brand-view-all:hover {
+  background: #BCE0F7;
+  color: #0F2A54;
 }
 
 .clothing-section {

@@ -1,30 +1,60 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import fitted from '../assets/fitted.png';
 import searchIcon from '../assets/search.png';
 import favoriteIcon from '../assets/favorite.png';
 import closetIcon from '../assets/closet.png';
 import loginIcon from '../assets/login.png';
 import graffiti from '../assets/graffiti.jpg';
+import googleLogo from '../assets/googlelogo.png';
+import facebookLogo from '../assets/facebooklogo2.png';
+import { login, loginWithGoogle, loginWithFacebook } from '../services/authApi';
+import { useAuth } from '../contexts/AuthContext';
 import '../css/Login.css';
 
 function Login() {
-    const [formData, setFormData] = useState({
+    const [loginFormData, setLoginFormData] = useState({
         email: '',
         password: ''
     });
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const { setAuthUser } = useAuth();
 
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
+    const handleLoginChange = (e) => {
+        setLoginFormData({
+            ...loginFormData,
             [e.target.name]: e.target.value
         });
+        setError(''); // Clear error when user types
     };
 
-    const handleSubmit = (e) => {
+    const handleLoginSubmit = async (e) => {
         e.preventDefault();
-        console.log('Login attempt:', formData);
-        // Add login logic here
+        setError('');
+        setLoading(true);
+
+        try {
+            const response = await login(loginFormData.email, loginFormData.password);
+            if (response.success && response.user) {
+                setAuthUser(response.user);
+                // Redirect to home page
+                navigate('/');
+            }
+        } catch (err) {
+            setError(err.message || 'Login failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = () => {
+        loginWithGoogle();
+    };
+
+    const handleFacebookLogin = () => {
+        loginWithFacebook();
     };
 
     return (
@@ -61,9 +91,15 @@ function Login() {
             <div className="login-content">
                 <div className="login-form-container">
                     <h1 className="login-title">Welcome Back</h1>
-                    <p className="login-subtitle">Sign in to your FITTED account</p>
+                    <p className="login-subtitle">Log in to your FITTED account</p>
                     
-                    <form className="login-form" onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="error-message" style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>
+                            {error}
+                        </div>
+                    )}
+                    
+                    <form className="login-form" onSubmit={handleLoginSubmit}>
                         <div className="form-group">
                             <label htmlFor="email">Email Address</label>
                             <input 
@@ -71,9 +107,10 @@ function Login() {
                                 id="email" 
                                 name="email"
                                 placeholder="Enter your email" 
-                                value={formData.email}
-                                onChange={handleChange}
+                                value={loginFormData.email}
+                                onChange={handleLoginChange}
                                 required
+                                disabled={loading}
                             />
                         </div>
                         
@@ -84,9 +121,10 @@ function Login() {
                                 id="password" 
                                 name="password"
                                 placeholder="Enter your password" 
-                                value={formData.password}
-                                onChange={handleChange}
+                                value={loginFormData.password}
+                                onChange={handleLoginChange}
                                 required
+                                disabled={loading}
                             />
                         </div>
                         
@@ -100,12 +138,27 @@ function Login() {
                             </Link>
                         </div>
                         
-                        <button type="submit" className="login-btn">
-                            Sign In
+                        <button type="submit" className="login-btn" disabled={loading}>
+                            {loading ? 'Logging in...' : 'Log In'}
                         </button>
                         
+                        <div className="or-divider">
+                            <span>OR</span>
+                        </div>
+                        
+                        <p className="signup-with-text">Log in with</p>
+                        
+                        <div className="social-login-buttons">
+                            <button type="button" className="social-btn" onClick={handleGoogleLogin}>
+                                <img src={googleLogo} alt="Google" />
+                            </button>
+                            <button type="button" className="social-btn social-btn-facebook" onClick={handleFacebookLogin}>
+                                <img src={facebookLogo} alt="Facebook" className="facebook-logo" />
+                            </button>
+                        </div>
+                        
                         <div className="signup-link">
-                            <p>Don't have an account? <Link to="/signup">Sign up here</Link></p>
+                            <p>Don't have an account? <Link to="/signup" className="link-button">Sign up here</Link></p>
                         </div>
                     </form>
                 </div>

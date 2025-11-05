@@ -91,11 +91,11 @@
 
 .login-form-container {
   background-color: white;
-  padding: 3rem;
+  padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 450px;
+  max-width: 400px;
   border: 1px solid #e0e0e0;
   position: relative;
   overflow: hidden;
@@ -162,7 +162,7 @@
 
 .login-title {
   color: #111;
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   margin: 0 0 0.5rem 0;
   text-align: center;
@@ -178,7 +178,7 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .form-group {
@@ -258,7 +258,8 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease;
-  margin-top: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
 }
 
 .login-btn:hover {
@@ -272,8 +273,8 @@
 
 .signup-link {
   text-align: center;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
+  margin-top: 0.25rem;
+  padding-top: 0.5rem;
   border-top: 1px solid #e0e0e0;
 }
 
@@ -293,6 +294,169 @@
 .signup-link a:hover {
   color: #7bb3d9;
   text-decoration: underline;
+}
+
+/* Password Input Wrapper */
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-wrapper input {
+  padding-right: 45px;
+  width: 100%;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: #111;
+}
+
+/* Password Requirements */
+.password-requirements {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0.25rem 0 0 0;
+}
+
+/* Terms Link */
+.terms-link {
+  color: #87CEEB;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.terms-link:hover {
+  color: #7bb3d9;
+}
+
+/* Signup Submit Button */
+.signup-submit-btn {
+  background-color: #87CEEB;
+  color: #111;
+  border: none;
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  margin-top: 0.5rem;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.signup-submit-btn:hover {
+  background-color: #7bb3d9;
+  transform: translateY(-1px);
+}
+
+.signup-submit-btn:active {
+  transform: translateY(0);
+}
+
+/* OR Divider */
+.or-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 0.25rem 0 0.25rem 0;
+}
+
+.or-divider::before,
+.or-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.or-divider span {
+  padding: 0 1rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Sign up with text */
+.signup-with-text {
+  text-align: center;
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 0 0;
+}
+
+/* Social Login Buttons */
+.social-login-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+  margin-top: -0.25rem;
+}
+
+.social-btn {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.social-btn:hover {
+  border-color: #87CEEB;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.social-btn img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.social-btn-facebook img,
+.facebook-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  transform: scale(1.7);
+  transform-origin: center;
+}
+
+/* Link Button */
+.link-button {
+  background: none;
+  border: none;
+  color: #87CEEB;
+  text-decoration: underline;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.link-button:hover {
+  color: #7bb3d9;
 }
 
 /* Graffiti Background */

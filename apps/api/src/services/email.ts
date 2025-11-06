@@ -4,11 +4,11 @@ import { env } from '../env';
 const resend = new Resend(env.RESEND_API_KEY);
 
 export async function sendVerificationEmail(to: string, code: string) {
-  const subject = 'Your FashionApp Verification Code';
+  const subject = `${code} is your verification code`;
   const html = `<p>Your verification code is: <strong>${code}</strong></p>`;
   try {
     const result = await resend.emails.send({
-      from: 'no-reply@notifications.fitted.com',
+      from: 'no-reply@updates.andrewchuang.com',
       to,
       subject,
       html,

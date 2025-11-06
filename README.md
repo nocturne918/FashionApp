@@ -1,7 +1,5 @@
-# FashionApp
-CEN3031 Project
-
-A fashion app that helps users create outfits, not merely shop for singular items, and collaborate/share with friends.
+# Fitted
+A fashion app for CEN3031
 
 ## Tech Stack
 

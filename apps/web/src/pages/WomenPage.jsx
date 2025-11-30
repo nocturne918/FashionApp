@@ -85,7 +85,7 @@ function WomenPage() {
                 setLoading(false);
             }
         };
-        
+
         loadClothing();
     }, []);
 
@@ -94,19 +94,19 @@ function WomenPage() {
         // Fetch the next page of products when the sentinel becomes visible
         const loadMore = async () => {
             if (!hasMore || loading) return;
-            
+
             setLoading(true);
             try {
                 let currentPage = page;
                 let foundProducts = false;
                 let attempts = 0;
                 const maxAttempts = 5;
-                
+
                 // Try up to maxAttempts pages until one returns data
                 while (!foundProducts && attempts < maxAttempts) {
-                    const moreProducts = await getProducts(30, currentPage * 30);
+                    const moreProducts = await getProducts(30, currentPage * 30, 'Women');
                     console.log('Loading products, page:', currentPage + 1, 'Count:', moreProducts.length);
-                    
+
                     if (moreProducts.length > 0) {
                         // Append new products to the existing list
                         setClothing(prev => {
@@ -123,7 +123,7 @@ function WomenPage() {
                         console.log(`Page ${currentPage} was empty, trying next page...`);
                     }
                 }
-                
+
                 // If no products were found after several attempts, stop fetching
                 if (!foundProducts) {
                     console.log('No more products to load after trying multiple pages');
@@ -233,9 +233,9 @@ function WomenPage() {
     const handleSort = (sortOption) => {
         setSortBy(sortOption);
         setSortDropdownOpen(false);
-        
+
         const sortedClothing = [...clothing];
-        switch(sortOption) {
+        switch (sortOption) {
             case 'name-asc':
                 sortedClothing.sort((a, b) => {
                     const nameA = (a.title || a.tittle || '').toLowerCase();
@@ -276,12 +276,12 @@ function WomenPage() {
             {/* Filter Sidebar */}
             {filterSidebarOpen && (
                 <>
-                    <div 
+                    <div
                         className="filter-sidebar-overlay"
                         onClick={() => setFilterSidebarOpen(false)}
                     ></div>
                     <div className="filter-sidebar">
-                        <button 
+                        <button
                             className="filter-sidebar-close"
                             onClick={() => setFilterSidebarOpen(false)}
                         >
@@ -290,12 +290,12 @@ function WomenPage() {
                         <h2 className="filter-sidebar-title">
                             FILTERS ({Object.values(filters).filter(Boolean).length})
                         </h2>
-                        
+
                         <div className="filter-options">
                             <div className="filter-option-item-simple">
                                 <span className="filter-option-name">SUGGESTIONS</span>
                                 <label className="toggle-switch">
-                                    <input 
+                                    <input
                                         type="checkbox"
                                         checked={filters.suggestions}
                                         onChange={() => toggleFilterOption('suggestions')}
@@ -303,14 +303,14 @@ function WomenPage() {
                                     <span className="toggle-slider"></span>
                                 </label>
                             </div>
-                            
+
                             <div className="filter-option-item">
                                 <div className="filter-option-header" onClick={() => filters.productType && toggleExpanded('productType')}>
                                     <span className="filter-option-name">
                                         PRODUCT TYPE
                                     </span>
                                     <label className="toggle-switch" onClick={(e) => e.stopPropagation()}>
-                                        <input 
+                                        <input
                                             type="checkbox"
                                             checked={filters.productType}
                                             onChange={() => toggleFilterOption('productType')}
@@ -320,19 +320,19 @@ function WomenPage() {
                                 </div>
                                 {filters.productType && expandedFilters.productType && (
                                     <div className="filter-sub-options">
-                                        <button 
+                                        <button
                                             className={`filter-sub-option ${productTypeOptions.top ? 'active' : ''}`}
                                             onClick={() => toggleProductTypeOption('top')}
                                         >
                                             TOP
                                         </button>
-                                        <button 
+                                        <button
                                             className={`filter-sub-option ${productTypeOptions.bottom ? 'active' : ''}`}
                                             onClick={() => toggleProductTypeOption('bottom')}
                                         >
                                             BOTTOM
                                         </button>
-                                        <button 
+                                        <button
                                             className={`filter-sub-option ${productTypeOptions.footwear ? 'active' : ''}`}
                                             onClick={() => toggleProductTypeOption('footwear')}
                                         >
@@ -341,11 +341,11 @@ function WomenPage() {
                                     </div>
                                 )}
                             </div>
-                            
+
                             <div className="filter-option-item-simple">
                                 <span className="filter-option-name">SIZE</span>
                                 <label className="toggle-switch">
-                                    <input 
+                                    <input
                                         type="checkbox"
                                         checked={filters.size}
                                         onChange={() => toggleFilterOption('size')}
@@ -353,11 +353,11 @@ function WomenPage() {
                                     <span className="toggle-slider"></span>
                                 </label>
                             </div>
-                            
+
                             <div className="filter-option-item-simple">
                                 <span className="filter-option-name">WEATHER</span>
                                 <label className="toggle-switch">
-                                    <input 
+                                    <input
                                         type="checkbox"
                                         checked={filters.weather}
                                         onChange={() => toggleFilterOption('weather')}
@@ -366,7 +366,7 @@ function WomenPage() {
                                 </label>
                             </div>
                         </div>
-                        
+
                         <button className="filter-view-results-btn" onClick={() => setFilterSidebarOpen(false)}>
                             VIEW RESULTS
                         </button>
@@ -376,21 +376,21 @@ function WomenPage() {
                     </div>
                 </>
             )}
-            
+
             {/* Hero Section with Graffiti Background */}
             <div className="hero-section">
                 <div className="hero-content">
                     <div className="category-badge">Women</div>
                     {/* Filter and Sort Buttons */}
                     <div className="filter-sort-buttons">
-                        <button 
+                        <button
                             className="filter-btn"
                             onClick={() => setFilterSidebarOpen(true)}
                         >
                             FILTER <span className="chevron">▼</span>
                         </button>
                         <div className="sort-dropdown-wrapper" ref={sortDropdownRef}>
-                            <button 
+                            <button
                                 className="sort-btn"
                                 onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
                             >
@@ -398,25 +398,25 @@ function WomenPage() {
                             </button>
                             {sortDropdownOpen && (
                                 <div className="sort-dropdown">
-                                    <button 
+                                    <button
                                         className={`sort-option ${sortBy === 'name-asc' ? 'active' : ''}`}
                                         onClick={() => handleSort('name-asc')}
                                     >
                                         Name: A to Z
                                     </button>
-                                    <button 
+                                    <button
                                         className={`sort-option ${sortBy === 'name-desc' ? 'active' : ''}`}
                                         onClick={() => handleSort('name-desc')}
                                     >
                                         Name: Z to A
                                     </button>
-                                    <button 
+                                    <button
                                         className={`sort-option ${sortBy === 'price-low' ? 'active' : ''}`}
                                         onClick={() => handleSort('price-low')}
                                     >
                                         Price: low to high
                                     </button>
-                                    <button 
+                                    <button
                                         className={`sort-option ${sortBy === 'price-high' ? 'active' : ''}`}
                                         onClick={() => handleSort('price-high')}
                                     >
@@ -433,28 +433,28 @@ function WomenPage() {
             <div className="main-content">
                 {/* Filter Section - Now Horizontal */}
                 <div className="filter-section">
-                    <button 
+                    <button
                         className={`filter-button ${selectedFilters.suggestion ? 'active' : ''}`}
                         onClick={() => toggleFilter('suggestion')}
                     >
                         Suggestion
                     </button>
 
-                    <button 
+                    <button
                         className={`filter-button ${selectedFilters.weather ? 'active' : ''}`}
                         onClick={() => toggleFilter('weather')}
                     >
                         Weather
                     </button>
 
-                    <button 
+                    <button
                         className={`filter-button ${selectedFilters.trending ? 'active' : ''}`}
                         onClick={() => toggleFilter('trending')}
                     >
                         Trending
                     </button>
 
-                    <button 
+                    <button
                         className={`filter-button ${selectedFilters.price ? 'active' : ''}`}
                         onClick={() => toggleFilter('price')}
                     >

@@ -1,24 +1,24 @@
-import { useState, useEffect, useRef } from 'react'; 
-import ClothingCard from '../components/ClothingCard.jsx'; 
-import LoadingSpinner from '../components/LoadingSpinner.jsx'; 
-import ErrorMessage from '../components/ErrorMessage.jsx'; 
-import { getProducts } from '../services/api.js'; 
+import { useState, useEffect, useRef } from 'react';
+import ClothingCard from '../components/ClothingCard.jsx';
+import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import ErrorMessage from '../components/ErrorMessage.jsx';
+import { getProducts } from '../services/api.js';
 import '../css/MenPage.css';
 
 // Men category page
-function MenPage() { 
-    const [clothing, setClothing] = useState([]); 
-    const [error, setError] = useState(null); 
+function MenPage() {
+    const [clothing, setClothing] = useState([]);
+    const [error, setError] = useState(null);
     // loading flag
     const [loading, setLoading] = useState(true);
     // current page index 
-    const [page, setPage] = useState(1); 
+    const [page, setPage] = useState(1);
     // more pages available
-    const [hasMore, setHasMore] = useState(true); 
+    const [hasMore, setHasMore] = useState(true);
     // grid container (for sentinel)
-    const containerRef = useRef(null); 
-    const observerRef = useRef(null); 
-    const [selectedFilters, setSelectedFilters] = useState({ 
+    const containerRef = useRef(null);
+    const observerRef = useRef(null);
+    const [selectedFilters, setSelectedFilters] = useState({
         suggestion: true,
         weather: true,
         trending: false,
@@ -82,18 +82,18 @@ function MenPage() {
     useEffect(() => {
         const loadMore = async () => { // fetch next page when sentinel intersects
             if (!hasMore || loading) return;
-            
+
             setLoading(true);
             try {
                 let currentPage = page;
                 let foundProducts = false;
                 let attempts = 0;
                 const maxAttempts = 5;
-                
+
                 while (!foundProducts && attempts < maxAttempts) {
-                    const moreProducts = await getProducts(30, currentPage * 30);
+                    const moreProducts = await getProducts(30, currentPage * 30, 'Men');
                     console.log('Loading products, page:', currentPage + 1, 'Count:', moreProducts.length);
-                    
+
                     if (moreProducts.length > 0) {
                         setClothing(prev => {
                             const newProducts = [...prev, ...moreProducts];
@@ -108,7 +108,7 @@ function MenPage() {
                         console.log(`Page ${currentPage} was empty, trying next page...`);
                     }
                 }
-                
+
                 if (!foundProducts) {
                     console.log('No more products to load after trying multiple pages');
                     setHasMore(false);
@@ -120,14 +120,14 @@ function MenPage() {
             }
         };
 
-        const options = { 
+        const options = {
             root: null,
             rootMargin: '100px',
             threshold: 0.1
         };
 
         // trigger load when intersecting
-        const callback = (entries) => { 
+        const callback = (entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting && !loading && hasMore) {
                     loadMore();
@@ -135,7 +135,7 @@ function MenPage() {
             });
         };
 
-        observerRef.current = new IntersectionObserver(callback, options); 
+        observerRef.current = new IntersectionObserver(callback, options);
 
         if (containerRef.current) {
             const sentinel = document.createElement('div');
@@ -145,14 +145,14 @@ function MenPage() {
             observerRef.current.observe(sentinel);
         }
 
-        return () => { 
+        return () => {
             if (observerRef.current) {
                 observerRef.current.disconnect();
             }
         };
     }, [page, hasMore, loading]);
 
-    const toggleFilter = (filterName) => { 
+    const toggleFilter = (filterName) => {
         setSelectedFilters(prev => ({
             ...prev,
             [filterName]: !prev[filterName]
@@ -213,9 +213,9 @@ function MenPage() {
     const handleSort = (sortOption) => {
         setSortBy(sortOption);
         setSortDropdownOpen(false);
-        
+
         const sortedClothing = [...clothing];
-        switch(sortOption) {
+        switch (sortOption) {
             case 'name-asc':
                 sortedClothing.sort((a, b) => {
                     const nameA = (a.title || a.tittle || '').toLowerCase();
@@ -255,12 +255,12 @@ function MenPage() {
             {/* Filter Sidebar */}
             {filterSidebarOpen && (
                 <>
-                    <div 
+                    <div
                         className="filter-sidebar-overlay"
                         onClick={() => setFilterSidebarOpen(false)}
                     ></div>
                     <div className="filter-sidebar">
-                        <button 
+                        <button
                             className="filter-sidebar-close"
                             onClick={() => setFilterSidebarOpen(false)}
                         >
@@ -269,12 +269,12 @@ function MenPage() {
                         <h2 className="filter-sidebar-title">
                             FILTERS ({Object.values(filters).filter(Boolean).length})
                         </h2>
-                        
+
                         <div className="filter-options">
                             <div className="filter-option-item-simple">
                                 <span className="filter-option-name">SUGGESTIONS</span>
                                 <label className="toggle-switch">
-                                    <input 
+                                    <input
                                         type="checkbox"
                                         checked={filters.suggestions}
                                         onChange={() => toggleFilterOption('suggestions')}
@@ -282,14 +282,14 @@ function MenPage() {
                                     <span className="toggle-slider"></span>
                                 </label>
                             </div>
-                            
+
                             <div className="filter-option-item">
                                 <div className="filter-option-header" onClick={() => filters.productType && toggleExpanded('productType')}>
                                     <span className="filter-option-name">
                                         PRODUCT TYPE
                                     </span>
                                     <label className="toggle-switch" onClick={(e) => e.stopPropagation()}>
-                                        <input 
+                                        <input
                                             type="checkbox"
                                             checked={filters.productType}
                                             onChange={() => toggleFilterOption('productType')}
@@ -299,19 +299,19 @@ function MenPage() {
                                 </div>
                                 {filters.productType && expandedFilters.productType && (
                                     <div className="filter-sub-options">
-                                        <button 
+                                        <button
                                             className={`filter-sub-option ${productTypeOptions.top ? 'active' : ''}`}
                                             onClick={() => toggleProductTypeOption('top')}
                                         >
                                             TOP
                                         </button>
-                                        <button 
+                                        <button
                                             className={`filter-sub-option ${productTypeOptions.bottom ? 'active' : ''}`}
                                             onClick={() => toggleProductTypeOption('bottom')}
                                         >
                                             BOTTOM
                                         </button>
-                                        <button 
+                                        <button
                                             className={`filter-sub-option ${productTypeOptions.footwear ? 'active' : ''}`}
                                             onClick={() => toggleProductTypeOption('footwear')}
                                         >
@@ -320,11 +320,11 @@ function MenPage() {
                                     </div>
                                 )}
                             </div>
-                            
+
                             <div className="filter-option-item-simple">
                                 <span className="filter-option-name">SIZE</span>
                                 <label className="toggle-switch">
-                                    <input 
+                                    <input
                                         type="checkbox"
                                         checked={filters.size}
                                         onChange={() => toggleFilterOption('size')}
@@ -332,11 +332,11 @@ function MenPage() {
                                     <span className="toggle-slider"></span>
                                 </label>
                             </div>
-                            
+
                             <div className="filter-option-item-simple">
                                 <span className="filter-option-name">WEATHER</span>
                                 <label className="toggle-switch">
-                                    <input 
+                                    <input
                                         type="checkbox"
                                         checked={filters.weather}
                                         onChange={() => toggleFilterOption('weather')}
@@ -345,7 +345,7 @@ function MenPage() {
                                 </label>
                             </div>
                         </div>
-                        
+
                         <button className="filter-view-results-btn" onClick={() => setFilterSidebarOpen(false)}>
                             VIEW RESULTS
                         </button>
@@ -355,21 +355,21 @@ function MenPage() {
                     </div>
                 </>
             )}
-            
+
             {/* Hero Section with Graffiti Background */}
             <div className="hero-section">
-                <div className="hero-content"> 
+                <div className="hero-content">
                     <div className="category-badge">Men</div>
                     {/* Filter and Sort Buttons */}
                     <div className="filter-sort-buttons">
-                        <button 
+                        <button
                             className="filter-btn"
                             onClick={() => setFilterSidebarOpen(true)}
                         >
                             FILTER <span className="chevron">▼</span>
                         </button>
                         <div className="sort-dropdown-wrapper" ref={sortDropdownRef}>
-                            <button 
+                            <button
                                 className="sort-btn"
                                 onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
                             >
@@ -377,25 +377,25 @@ function MenPage() {
                             </button>
                             {sortDropdownOpen && (
                                 <div className="sort-dropdown">
-                                    <button 
+                                    <button
                                         className={`sort-option ${sortBy === 'name-asc' ? 'active' : ''}`}
                                         onClick={() => handleSort('name-asc')}
                                     >
                                         Name: A to Z
                                     </button>
-                                    <button 
+                                    <button
                                         className={`sort-option ${sortBy === 'name-desc' ? 'active' : ''}`}
                                         onClick={() => handleSort('name-desc')}
                                     >
                                         Name: Z to A
                                     </button>
-                                    <button 
+                                    <button
                                         className={`sort-option ${sortBy === 'price-low' ? 'active' : ''}`}
                                         onClick={() => handleSort('price-low')}
                                     >
                                         Price: low to high
                                     </button>
-                                    <button 
+                                    <button
                                         className={`sort-option ${sortBy === 'price-high' ? 'active' : ''}`}
                                         onClick={() => handleSort('price-high')}
                                     >
@@ -409,31 +409,31 @@ function MenPage() {
             </div>
 
             {/* Main Content Area */}
-            <div className="main-content"> 
+            <div className="main-content">
                 {/* Filter Section - Now Horizontal */}
-                <div className="filter-section"> 
-                    <button 
+                <div className="filter-section">
+                    <button
                         className={`filter-button ${selectedFilters.suggestion ? 'active' : ''}`}
                         onClick={() => toggleFilter('suggestion')}
                     >
                         Suggestion
                     </button>
 
-                    <button 
+                    <button
                         className={`filter-button ${selectedFilters.weather ? 'active' : ''}`}
                         onClick={() => toggleFilter('weather')}
                     >
                         Weather
                     </button>
 
-                    <button 
+                    <button
                         className={`filter-button ${selectedFilters.trending ? 'active' : ''}`}
                         onClick={() => toggleFilter('trending')}
                     >
                         Trending
                     </button>
 
-                    <button 
+                    <button
                         className={`filter-button ${selectedFilters.price ? 'active' : ''}`}
                         onClick={() => toggleFilter('price')}
                     >
@@ -442,8 +442,8 @@ function MenPage() {
                 </div>
 
                 {/* Product Grid */}
-                <div className="product-grid-section"> 
-                    <div className="grid-header"> 
+                <div className="product-grid-section">
+                    <div className="grid-header">
                         <button className="sort-button">
                             Sort <span className="sort-arrow">▼</span>
                         </button>
@@ -452,9 +452,9 @@ function MenPage() {
                     {error && <ErrorMessage message={error} />} {/* show error if fetch fails */}
 
                     {loading && page === 1 ? (
-                        <LoadingSpinner text="Loading products..." /> 
+                        <LoadingSpinner text="Loading products..." />
                     ) : (
-                        <div ref={containerRef} className="product-grid"> 
+                        <div ref={containerRef} className="product-grid">
                             {clothing.map((item, index) => (
                                 <ClothingCard key={`${item.id}-${index}`} clothing={item} />
                             ))}

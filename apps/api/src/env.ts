@@ -3,9 +3,9 @@ import path from 'path';
 import { existsSync } from 'fs';
 
 const possiblePaths = [
-  path.resolve(process.cwd(), 'apps/api/.env'),  // From monorepo root
-  path.resolve(process.cwd(), '.env'),            // From apps/api
-  path.resolve(__dirname, '../.env'),             // Relative to src
+  path.resolve(process.cwd(), 'apps/api/.env'),
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(__dirname, '../.env'),
 ];
 
 const envPath = possiblePaths.find(p => existsSync(p));
@@ -16,7 +16,7 @@ if (!envPath) {
 
 // Load environment variables from .env file
 dotenv.config({ path: envPath });
-console.log(`📁 Loaded .env from: ${envPath}`);
+console.log(`Loaded .env from: ${envPath}`);
 
 // Export environment variables with type safety
 export const env = {
@@ -43,6 +43,8 @@ export const env = {
 
   // Email
   RESEND_API_KEY: process.env.RESEND_API_KEY || '',
+
+  STOCKX_COOKIE: process.env.STOCKX_COOKIE || '',
 } as const;
 
 // Validate required environment variables

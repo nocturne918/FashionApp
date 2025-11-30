@@ -56,6 +56,23 @@ export const outfits = pgTable('outfits', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// Products table
+export const products = pgTable('products', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  stockxId: text('stockx_id').unique().notNull(),
+  title: text('title').notNull(),
+  brand: text('brand'),
+  category: text('category'),
+  imageUrl: text('image_url'),
+  frontImageUrl: text('front_image_url'),
+  urlKey: text('url_key'),
+  lowestAsk: integer('lowest_ask'),
+  description: text('description'),
+  parentCategory: text('parent_category'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),

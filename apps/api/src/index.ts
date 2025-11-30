@@ -4,6 +4,8 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import authRouter from './routes/auth';
+import productsRouter from './routes/products';
+import outfitRouter from './routes/outfit';
 import { env } from './env';
 import { configureSession } from './services/session';
 
@@ -28,6 +30,8 @@ app.get('/api/test', (req, res) => {
 
 // Mount organized auth router
 app.use('/api/auth', authRouter);
+app.use('/api/products', productsRouter);
+app.use('/api/outfits', outfitRouter);
 
 app.listen(Number(env.PORT), () => {
   console.log(`API listening on http://localhost:${env.PORT}`);

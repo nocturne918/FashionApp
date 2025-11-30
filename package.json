@@ -1,0 +1,27 @@
+{
+  "name": "fashionapp",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.0",
+    "turbo": "^2.5.8",
+    "typescript": "^5.9.3"
+  },
+  "packageManager": "pnpm@9.6.0",
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "express-session": "^1.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "passport": "^0.7.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth20": "^2.0.0"
+  }
+}

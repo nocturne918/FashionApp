@@ -1,0 +1,50 @@
+/* App.css global layout helpers for app-level containers and graffiti banner section. */
+
+.graffiti-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.graffiti-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content.closet-main {
+  overflow: visible;
+}
+
+.page-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+  color: white;
+}
+
+.page-placeholder h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.page-placeholder p {
+  font-size: 1.2rem;
+  color: #ccc;
+}

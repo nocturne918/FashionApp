@@ -5,7 +5,6 @@ import { existsSync } from 'fs';
 const possiblePaths = [
   path.resolve(process.cwd(), 'apps/api/.env'),
   path.resolve(process.cwd(), '.env'),
-  path.resolve(__dirname, '../.env'),
 ];
 
 const envPath = possiblePaths.find(p => existsSync(p));

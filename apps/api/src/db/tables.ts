@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, varchar, json } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, integer, varchar, json, real, unique } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Users table (id is UUID, email is unique for login)
@@ -50,11 +50,21 @@ export const outfits = pgTable('outfits', {
   userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   description: text('description'),
-  imageUrl: text('image_url'),
   isPublic: boolean('is_public').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+
+// Outfit Items table (Junction table for Outfits <-> Products)
+export const outfitItems = pgTable('outfit_items', {
+  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
+  outfitId: text('outfit_id').notNull().references(() => outfits.id, { onDelete: 'cascade' }),
+  productId: text('product_id').notNull().references(() => products.id, { onDelete: 'cascade' }),
+  slot: text('slot').notNull(), // e.g., 'top', 'bottom', 'footwear', 'accessory'
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (t) => ({
+  unq: unique().on(t.outfitId, t.slot), // One item per slot
+}));
 
 // Products table
 export const products = pgTable('products', {
@@ -86,9 +96,21 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
   }),
 }));
 
-export const outfitsRelations = relations(outfits, ({ one }) => ({
+export const outfitsRelations = relations(outfits, ({ one, many }) => ({
   user: one(users, {
     fields: [outfits.userId],
     references: [users.id],
+  }),
+  items: many(outfitItems),
+}));
+
+export const outfitItemsRelations = relations(outfitItems, ({ one }) => ({
+  outfit: one(outfits, {
+    fields: [outfitItems.outfitId],
+    references: [outfits.id],
+  }),
+  product: one(products, {
+    fields: [outfitItems.productId],
+    references: [products.id],
   }),
 }));

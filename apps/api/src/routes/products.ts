@@ -17,6 +17,7 @@ router.get('/', async (req, res) => {
     const category = req.query.category as string;
     const brand = req.query.brand as string;
     const parentCategory = req.query.parentCategory as string;
+    const gender = req.query.gender as string;
 
     const conditions = [];
 
@@ -38,6 +39,10 @@ router.get('/', async (req, res) => {
 
     if (parentCategory) {
       conditions.push(eq(products.parentCategory, parentCategory));
+    }
+
+    if (gender) {
+      conditions.push(eq(products.gender, gender));
     }
 
     const whereClause = conditions.length > 0 ? and(...conditions) : undefined;

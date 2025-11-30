@@ -196,6 +196,7 @@ async function fetchCategory(categoryId: string, pagesToScrape = 1) {
                   urlKey: product.urlKey,
                   lowestAsk: product.lowestAsk,
                   description: product.description,
+                  gender: product.gender,
                   updatedAt: new Date()
                 }
               });

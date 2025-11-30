@@ -79,6 +79,7 @@ export const products = pgTable('products', {
   lowestAsk: integer('lowest_ask'),
   description: text('description'),
   parentCategory: text('parent_category'),
+  gender: text('gender'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

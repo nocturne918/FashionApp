@@ -1,13 +1,14 @@
 import { db } from '../db/db';
 import { products } from '../db/tables';
-import fs from 'fs';
-import path from 'path';
 import { env } from '../env';
+import { getParentCategoryMap, getPrioritySlugs } from './categories';
 
 // CONFIGURATION
 const COOKIE_STRING = env.STOCKX_COOKIE;
 
-const HEADERS = {
+const deviceId = env.STOCKX_COOKIE.split(';').find((cookie: string) => cookie.startsWith('stockx_device_id='))?.split('=')[1];
+
+const HEADERS: Record<string, string> = {
   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:145.0) Gecko/20100101 Firefox/145.0',
   'Accept': 'application/json',
   'Content-Type': 'application/json',
@@ -15,12 +16,15 @@ const HEADERS = {
   'App-Version': '2025.11.09.03',
   'apollographql-client-name': 'Iron',
   'apollographql-client-version': '2025.11.09.03',
-  'x-stockx-device-id': '6c91df2c-ab57-4bdd-837b-171e9c91665d', // Must match cookie
   'selected-country': 'US',
   'Origin': 'https://stockx.com',
   'Referer': 'https://stockx.com/browse/men',
   'Cookie': COOKIE_STRING
 };
+
+if (deviceId) {
+  HEADERS['x-stockx-device-id'] = deviceId;
+}
 
 const URL = "https://stockx.com/api/p/e";
 
@@ -99,31 +103,11 @@ function getFrontImageUrl(imageUrl: string, category: string): string | null {
   return `https://images.stockx.com/360/${slug}/Images/${slug}/Lv2/img10.jpg`;
 }
 
-// Load Category Tree
-const treePath = path.join(__dirname, 'category_tree.json');
-const CATEGORY_TREE = JSON.parse(fs.readFileSync(treePath, 'utf-8'));
-
-// Map of slug -> Parent Category Name
-const PARENT_CATEGORY_MAP = new Map<string, string>();
-
-function buildCategoryMap(nodes: any[], parentName: string | null = null) {
-  for (const node of nodes) {
-    const currentVertical = parentName || node.name;
-
-    if (node.slug) {
-      PARENT_CATEGORY_MAP.set(node.slug, currentVertical);
-    }
-
-    if (node.subCategories) {
-      buildCategoryMap(node.subCategories, currentVertical);
-    }
-  }
-}
-
-buildCategoryMap(CATEGORY_TREE);
+// Map of slug -> Parent Category Name (Vertical)
+const PARENT_CATEGORY_MAP = getParentCategoryMap();
 
 async function fetchCategory(categoryId: string, pagesToScrape = 1) {
-  console.log(`=== Scraping Category: ${categoryId} ===`);
+  console.log(`--- Scraping Category: ${categoryId} ---`);
 
   for (let pageNum = 1; pageNum <= pagesToScrape; pageNum++) {
     const payload = {
@@ -234,18 +218,14 @@ async function fetchCategory(categoryId: string, pagesToScrape = 1) {
 }
 
 async function main() {
-  const slugsPath = path.join(__dirname, 'category_slugs.json');
+  const categoriesToScrape = getPrioritySlugs();
 
-  if (!fs.existsSync(slugsPath)) {
-    console.error("categories_slugs.json not found. Run get_categories.js first!");
-    process.exit(1);
-  }
+  console.log(`Loaded ${categoriesToScrape.length} PRIORITY categories to scrape.`);
 
-  const categoriesToScrape = JSON.parse(fs.readFileSync(slugsPath, 'utf-8'));
+  // Shuffle categories
+  const shuffled = categoriesToScrape.sort(() => 0.5 - Math.random());
 
-  console.log(`Loaded ${categoriesToScrape.length} categories to scrape.`);
-
-  for (const cat of categoriesToScrape) {
+  for (const cat of shuffled) {
     await fetchCategory(cat, 1);
   }
 

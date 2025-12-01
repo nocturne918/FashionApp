@@ -17,7 +17,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToStash,
         <img 
           src={product.imageUrl} 
           alt={product.name} 
-          className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-300"
+          className="w-full h-full object-contain mix-blend-multiply"
         />
         
         {/* Quick Action Overlay */}

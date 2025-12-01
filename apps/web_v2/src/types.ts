@@ -8,22 +8,32 @@ export const ProductCategory = {
 
 export type ProductCategory = typeof ProductCategory[keyof typeof ProductCategory];
 
+export const Department = {
+  MENS: 'MENS',
+  WOMENS: 'WOMENS',
+  KIDS: 'KIDS',
+  UNISEX: 'UNISEX'
+} as const;
+
+export type Department = 'MENS' | 'WOMENS' | 'KIDS' | 'UNISEX' | 'ALL';
+
 export interface Product {
   id: string;
   name: string;
   brand: string;
   price: number;
-  category: ProductCategory;
+  category: string; // Relaxed from enum for now to match backend strings
   imageUrl: string;
+  department: Department;
   color: string;
+  tags?: string[];
 }
 
 export interface OutfitItem extends Product {
-  x?: number; // For canvas positioning
+  x?: number;
   y?: number;
-  scale?: number;
   rotation?: number;
-  zIndex?: number;
+  scale?: number;
 }
 
 export interface Outfit {
@@ -34,6 +44,8 @@ export interface Outfit {
 }
 
 export interface User {
+  id: string;
   username: string;
   email: string;
+  token?: string; // Added token for auth
 }

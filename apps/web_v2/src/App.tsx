@@ -46,6 +46,10 @@ const AppContent = () => {
     setUser(loggedInUser);
   };
 
+  const handleLogout = () => {
+    setUser(null);
+  };
+
   const toggleStash = (product: Product) => {
     if (stashedProducts.find(p => p.id === product.id)) {
       setStashedProducts(prev => prev.filter(p => p.id !== product.id));
@@ -82,35 +86,35 @@ const AppContent = () => {
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<Layout cartCount={currentOutfitItems.length} />}>
-        <Route index element={
-          <Feed 
-            stashedProducts={stashedProducts} 
-            toggleStash={toggleStash} 
-            addToFit={addToFit} 
-          />
-        } />
-        <Route path="lab" element={
-          <Lab 
-            stashedProducts={stashedProducts} 
-            currentOutfitItems={currentOutfitItems} 
-            setCurrentOutfitItems={setCurrentOutfitItems} 
-            addToFit={addToFit} 
-            saveOutfit={saveOutfit} 
-          />
-        } />
-        <Route path="stash" element={
-          <Stash 
-            stashedProducts={stashedProducts} 
-            savedOutfits={savedOutfits} 
-            setSavedOutfits={setSavedOutfits} 
-            toggleStash={toggleStash} 
-            addToFit={addToFit} 
-          />
-        } />
-      </Route>
-    </Routes>
+      <Routes>
+        <Route path="/" element={<Layout cartCount={currentOutfitItems.length} user={user} onLogout={handleLogout} />}>
+          <Route index element={
+            <Feed 
+              stashedProducts={stashedProducts} 
+              toggleStash={toggleStash} 
+              addToFit={addToFit} 
+            />
+          } />
+          <Route path="lab" element={
+            <Lab 
+              stashedProducts={stashedProducts} 
+              currentOutfitItems={currentOutfitItems} 
+              setCurrentOutfitItems={setCurrentOutfitItems} 
+              addToFit={addToFit} 
+              saveOutfit={saveOutfit} 
+            />
+          } />
+          <Route path="stash" element={
+            <Stash 
+              stashedProducts={stashedProducts} 
+              savedOutfits={savedOutfits} 
+              setSavedOutfits={setSavedOutfits} 
+              toggleStash={toggleStash} 
+              addToFit={addToFit} 
+            />
+          } />
+        </Route>
+      </Routes>
   );
 };
 

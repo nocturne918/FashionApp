@@ -13,16 +13,9 @@ A fashion app for CEN3031
 
 ```
 apps/
-  ├── api/             # Express backend
-  │   ├── src/
-  │   │   ├── db/
-  │   │   │   └── tables.ts    # Drizzle schema
-  │   │   ├── auth.ts          # OAuth strategies
-  │   │   └── index.ts         # Express app
-  │   └── README.md
-  ├── web/             # React frontend (Vite)
-  │   └── src/
-  └── shared/          # Shared types
+  ├── api/
+  ├── web/
+  └── shared/
 ```
 
 ## Quick Start
@@ -30,6 +23,19 @@ apps/
 ### Prerequisites
 - Node.js >= 20
 - pnpm (`corepack enable`)
+
+### Environment Setup
+
+1. **Database**: Ensure PostgreSQL is running.
+   ```bash
+   # Quick local setup with Docker
+   docker run --name fashion-db -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=fashionapp -p 5432:5432 -d postgres
+   ```
+
+2. **Configuration**:
+   ```bash
+   cp apps/api/.env.example apps/api/.env
+   ```
 
 ### Install
 ```bash
@@ -55,7 +61,7 @@ pnpm build
 pnpm --filter api dev
 pnpm --filter web dev
 
-# Add dependencies
+# Add dependencies (examples)
 pnpm --filter api add express
 pnpm --filter web add axios
 

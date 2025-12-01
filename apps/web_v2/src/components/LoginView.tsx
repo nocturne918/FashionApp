@@ -28,6 +28,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
 
       // Mock Login Success
       onLogin({
+        id: '1',
         username: email.split('@')[0],
         email: email,
       });
@@ -40,6 +41,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
     
     setTimeout(() => {
       onLogin({
+        id: 'guest',
         username: 'guest_user',
         email: 'guest@fitted.com',
       });
@@ -52,8 +54,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
         
         {/* Left Side: Visuals */}
         <div className="md:w-1/2 bg-black text-white p-8 md:p-12 flex flex-col justify-between relative overflow-hidden">
-          <div className="relative z-10">
-            <h2 className="font-display text-4xl font-black uppercase mb-2">Member<br/>Access</h2>
+          <div className="relative z-10"> 
+            <h2 className="font-display text-4xl font-black uppercase mb-2">Member<br/>Preview</h2>
             <div className="h-1 w-20 bg-blue-600 mb-6"></div>
             <p className="font-mono text-sm opacity-80">
               Enter the archive. Build your rotation. Connect with the culture.
@@ -62,7 +64,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
           
           <div className="relative z-10 font-mono text-xs opacity-50 mt-12 md:mt-0">
             SYSTEM STATUS: ONLINE<br/>
-            VERSION: 2.0.4-ALPHA
+            VERSION: 0.2.0
           </div>
 
           {/* Abstract background element */}

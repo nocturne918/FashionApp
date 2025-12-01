@@ -1,8 +1,6 @@
-```typescript
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Icon } from '@iconify/react';
-import { ShoppingBag, LogOut } from 'lucide-react';
 import fittedLogo from '/assets/fitted.png';
 import type { User } from '../types';
 
@@ -27,7 +25,7 @@ const NavItem: React.FC<NavItemProps> = ({ to, id, label, icon, activeTab, onCli
     <Link
       to={to}
       onClick={onClick}
-      className={`flex items-center gap-2 text-lg font-bold uppercase tracking-wide px-4 py-2 border-2 transition-all
+      className={`flex items-center gap-2 text-lg font-bold uppercase tracking-wide px-4 py-2 border-2 transition-all no-underline
         ${isActive ? 'bg-black text-white border-black hard-shadow' : 'border-transparent hover:border-black hover:bg-white'}
       `}
     >
@@ -63,8 +61,8 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, user, onLogout }) => 
 
         {/* User Status / Mini Cart */}
         <div className="flex items-center gap-4">
-          <Link to="/lab" className="relative cursor-pointer hover:scale-110 transition-transform">
-            <ShoppingBag size={24} />
+          <Link to="/lab" className="relative cursor-pointer">
+            <Icon icon="lucide:shopping-bag" width="24" height="24" />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center border-2 border-black">
                 {cartCount}
@@ -76,7 +74,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, user, onLogout }) => 
             <div className="hidden md:flex items-center gap-3 pl-4 border-l-2 border-gray-300">
                <span className="font-mono text-xs font-bold truncate max-w-[100px]">{user.username}</span>
                <button onClick={onLogout} className="text-gray-500 hover:text-red-500" title="Sign Out">
-                 <LogOut size={20} />
+                 <Icon icon="lucide:log-out" width="20" height="20" />
                </button>
             </div>
           )}
@@ -95,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, user, onLogout }) => 
              <div className="flex items-center justify-between border-t-2 border-gray-200 pt-4 mt-2">
                <span className="font-mono text-xs font-bold">{user.username}</span>
                <button onClick={onLogout} className="flex items-center gap-2 text-red-500 font-bold uppercase text-xs">
-                 <LogOut size={16} /> Sign Out
+                 <Icon icon="lucide:log-out" width="20" height="20" /> Sign Out
                </button>
              </div>
           )}
@@ -104,4 +102,3 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, user, onLogout }) => 
     </nav>
   );
 };
-```

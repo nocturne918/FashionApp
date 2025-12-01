@@ -340,4 +340,9 @@ router.get('/me', authenticateJWT, (req, res) => {
   }
 });
 
+// Lockout User after multiple failed attempts
+// This can be implemented by tracking failed login attempts in the database
+// and locking the account for a certain period after exceeding a threshold.
+
+
 export default router;

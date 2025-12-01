@@ -20,8 +20,7 @@ console.log(`Loaded .env from: ${envPath}`);
 // Export environment variables with type safety
 export const env = {
   // Database
-  DATABASE_URL: process.env.DATABASE_URL!,
-
+  DATABASE_URL: process.env.DATABASE_URL || '',
   // OAuth - Google
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || '',

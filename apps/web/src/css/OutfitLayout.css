@@ -1,0 +1,12 @@
+/* For Closet Page to Display Items in Closet  */
+.outfit-layout {
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: visible;
+  width: 250px;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+}

@@ -2,23 +2,29 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { LoginView } from './components/LoginView';
+import { SignupView } from './components/SignupView';
 import { Feed } from './pages/Feed';
 import { Lab } from './pages/Lab';
 import { Stash } from './pages/Stash';
-import type { Product, Outfit, OutfitItem, User } from './types';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { authClient } from './lib/auth-client';
+import type { Product, Outfit, OutfitItem } from './types';
 
 const AppContent = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, loading } = useAuth();
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [stashedProducts, setStashedProducts] = useState<Product[]>([]);
   const [currentOutfitItems, setCurrentOutfitItems] = useState<OutfitItem[]>([]);
   const [savedOutfits, setSavedOutfits] = useState<Outfit[]>([]);
   const navigate = useNavigate();
 
+  const handleLogout = async () => {
+    await authClient.signOut();
+    // Context will update automatically
+  };
+
   // Load from local storage on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('fitted_user');
-    if (savedUser) setUser(JSON.parse(savedUser));
-
     const savedStash = localStorage.getItem('fitted_stash');
     if (savedStash) setStashedProducts(JSON.parse(savedStash));
     
@@ -27,28 +33,12 @@ const AppContent = () => {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      localStorage.setItem('fitted_user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('fitted_user');
-    }
-  }, [user]);
-
-  useEffect(() => {
     localStorage.setItem('fitted_stash', JSON.stringify(stashedProducts));
   }, [stashedProducts]);
 
   useEffect(() => {
     localStorage.setItem('fitted_outfits', JSON.stringify(savedOutfits));
   }, [savedOutfits]);
-
-  const handleLogin = (loggedInUser: User) => {
-    setUser(loggedInUser);
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-  };
 
   const toggleStash = (product: Product) => {
     if (stashedProducts.find(p => p.id === product.id)) {
@@ -81,8 +71,15 @@ const AppContent = () => {
     navigate('/stash');
   };
 
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen bg-black text-white">Loading...</div>;
+  }
+
   if (!user) {
-    return <LoginView onLogin={handleLogin} />;
+    if (authMode === 'signup') {
+      return <SignupView onSwitchToLogin={() => setAuthMode('login')} />;
+    }
+    return <LoginView onSwitchToSignup={() => setAuthMode('signup')} />;
   }
 
   return (
@@ -121,7 +118,9 @@ const AppContent = () => {
 const App = () => {
   return (
     <BrowserRouter>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </BrowserRouter>
   );
 };

@@ -34,6 +34,7 @@ export interface OutfitItem extends Product {
   y?: number;
   rotation?: number;
   scale?: number;
+  zIndex?: number;
 }
 
 export interface Outfit {
@@ -45,7 +46,10 @@ export interface Outfit {
 
 export interface User {
   id: string;
-  username: string;
   email: string;
-  token?: string; // Added token for auth
+  emailVerified: boolean;
+  name: string;
+  image?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }

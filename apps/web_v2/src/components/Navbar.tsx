@@ -72,7 +72,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, user, onLogout }) => 
           
           {user && (
             <div className="hidden md:flex items-center gap-3 pl-4 border-l-2 border-gray-300">
-               <span className="font-mono text-xs font-bold truncate max-w-[100px]">{user.username}</span>
+               <span className="font-mono text-xs font-bold truncate max-w-[100px]">{user.name}</span>
                <button onClick={onLogout} className="text-gray-500 hover:text-red-500" title="Sign Out">
                  <Icon icon="lucide:log-out" width="20" height="20" />
                </button>
@@ -91,7 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, user, onLogout }) => 
           <NavItem to="/stash" id="stash" label="Stash" icon="lucide:user" activeTab={activeTab} onClick={() => setMenuOpen(false)} />
           {user && (
              <div className="flex items-center justify-between border-t-2 border-gray-200 pt-4 mt-2">
-               <span className="font-mono text-xs font-bold">{user.username}</span>
+               <span className="font-mono text-xs font-bold">{user.name}</span>
                <button onClick={onLogout} className="flex items-center gap-2 text-red-500 font-bold uppercase text-xs">
                  <Icon icon="lucide:log-out" width="20" height="20" /> Sign Out
                </button>

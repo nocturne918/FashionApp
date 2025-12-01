@@ -3,11 +3,12 @@ import { Logo } from './Logo';
 import { Icon } from '@iconify/react';
 import { authClient } from '../lib/auth-client';
 
-interface LoginViewProps {
-  onSwitchToSignup: () => void;
+interface SignupViewProps {
+  onSwitchToLogin: () => void;
 }
 
-export const LoginView: React.FC<LoginViewProps> = ({ onSwitchToSignup }) => {
+export const SignupView: React.FC<SignupViewProps> = ({ onSwitchToLogin }) => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,19 +19,20 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSwitchToSignup }) => {
     setError('');
     setIsLoading(true);
 
-    const { error } = await authClient.signIn.email({
+    const { error } = await authClient.signUp.email({
       email,
       password,
+      name,
     });
 
     if (error) {
-      setError(error.message || 'Authentication failed');
-        setIsLoading(false);
+      setError(error.message || 'Signup failed');
+      setIsLoading(false);
     }
     // Success will trigger AuthContext update via useSession
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleSignup = async () => {
     setError('');
     setIsLoading(true);
     const { error } = await authClient.signIn.social({
@@ -39,19 +41,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSwitchToSignup }) => {
     });
     
     if (error) {
-      setError(error.message || 'Google authentication failed');
+      setError(error.message || 'Google signup failed');
       setIsLoading(false);
     }
-  };
-
-  const handleGuestLogin = () => {
-    setError('');
-    setIsLoading(true);
-    
-    setTimeout(() => {
-      setError('Guest access is currently disabled.');
-      setIsLoading(false);
-    }, 800);
   };
 
   return (
@@ -59,22 +51,22 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSwitchToSignup }) => {
       <div className="max-w-4xl w-full bg-white border-2 border-black hard-shadow flex flex-col md:flex-row overflow-hidden min-h-[600px]">
         
         {/* Left Side: Visuals */}
-        <div className="md:w-1/2 bg-black text-white p-8 md:p-12 flex flex-col justify-between relative overflow-hidden">
+        <div className="md:w-1/2 bg-blue-600 text-white p-8 md:p-12 flex flex-col justify-between relative overflow-hidden">
           <div className="relative z-10"> 
-            <h2 className="font-display text-4xl font-black uppercase mb-2">Preview<br/>Access</h2>
-            <div className="h-1 w-20 bg-blue-600 mb-6"></div>
+            <h2 className="font-display text-4xl font-black uppercase mb-2">Join The<br/>Archive</h2>
+            <div className="h-1 w-20 bg-black mb-6"></div>
             <p className="font-mono text-sm opacity-80">
-              Enter the archive. Build your rotation. Connect with the culture.
+              Create your profile. Curate your style. Define the future.
             </p>
           </div>
           
           <div className="relative z-10 font-mono text-xs opacity-50 mt-12 md:mt-0">
             SYSTEM STATUS: ONLINE<br/>
-            VERSION: 0.2.0
+            REGISTRATION: OPEN
           </div>
 
           {/* Abstract background element */}
-          <div className="absolute -bottom-10 -right-10 w-64 h-64 border-[20px] border-blue-600 rounded-full opacity-20 blur-xl"></div>
+          <div className="absolute -top-10 -left-10 w-64 h-64 border-[20px] border-black rounded-full opacity-10 blur-xl"></div>
         </div>
 
         {/* Right Side: Form */}
@@ -83,11 +75,22 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSwitchToSignup }) => {
             <Logo />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block font-bold text-xs uppercase mb-2">Full Name</label>
+              <input 
+                type="text" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="YOUR NAME"
+                className="w-full bg-white border-2 border-black p-3 font-mono text-sm focus:outline-none focus:bg-blue-50 focus:border-blue-600 transition-colors placeholder:text-gray-400"
+              />
+            </div>
+
             <div>
               <label className="block font-bold text-xs uppercase mb-2">Email Address</label>
               <input 
-                type="text" 
+                type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="USER@FITTED.COM"
@@ -117,44 +120,39 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSwitchToSignup }) => {
               disabled={isLoading}
               className="w-full bg-black text-white font-bold uppercase py-4 border-2 border-transparent hover:bg-blue-600 hover:border-blue-600 hard-shadow active:translate-y-[2px] active:shadow-none transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Authenticating...' : (
-                <>Enter The Archive <Icon icon="lucide:arrow-right" width={18} height={18} /></>
+              {isLoading ? 'Creating Account...' : (
+                <>Create Account <Icon icon="lucide:arrow-right" width={18} height={18} /></>
               )}
             </button>
+
           </form>
 
-          {/* Guest Access Divider */}
+          {/* Google Signup Divider */}
           <div className="relative flex py-5 items-center">
               <div className="flex-grow border-t border-gray-300"></div>
               <span className="flex-shrink-0 mx-4 text-gray-400 text-[10px] font-mono uppercase tracking-widest">or</span>
               <div className="flex-grow border-t border-gray-300"></div>
           </div>
 
-          <button 
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={isLoading}
-            className="w-full bg-white text-black font-bold uppercase py-3 border-2 border-black hover:bg-gray-50 hard-shadow active:translate-y-[2px] active:shadow-none transition-all flex justify-center items-center gap-2 text-xs tracking-widest disabled:opacity-50 mb-3"
-          >
-            <Icon icon="logos:google-icon" width={16} height={16} /> Continue with Google
-          </button>
-
-          <button 
-            type="button"
-            onClick={handleGuestLogin}
-            disabled={isLoading}
-            className="w-full bg-white text-gray-600 font-bold uppercase py-3 border-2 border-dashed border-gray-300 hover:border-black hover:text-black hover:bg-gray-50 transition-all flex justify-center items-center gap-2 text-xs tracking-widest disabled:opacity-50"
-          >
-            <Icon icon="lucide:ticket" width={16} height={16} /> Use Guest Pass
-          </button>
-
-          <div className="mt-8 pt-6 border-t-2 border-gray-200 flex justify-between items-center text-xs font-mono text-gray-500">
-            <a href="#" className="hover:text-black hover:underline">FORGOT PASS?</a>
+          {/* Google Signup */}
+          <div>
             <button 
-              onClick={onSwitchToSignup}
-              className="flex items-center gap-1 hover:text-black hover:underline uppercase"
+              type="button"
+              onClick={handleGoogleSignup}
+              disabled={isLoading}
+              className="w-full bg-white text-black font-bold uppercase py-3 border-2 border-black hover:bg-gray-50 hard-shadow active:translate-y-[2px] active:shadow-none transition-all flex justify-center items-center gap-2 text-xs tracking-widest disabled:opacity-50"
             >
-              <Icon icon="lucide:lock" width={12} height={12} /> SIGN UP
+              <Icon icon="logos:google-icon" width={16} height={16} /> Continue with Google
+            </button>
+          </div>
+
+          <div className="mt-8 pt-6 border-t-2 border-gray-200 flex justify-center items-center text-xs font-mono text-gray-500">
+            <span>ALREADY A MEMBER?</span>
+            <button 
+              onClick={onSwitchToLogin}
+              className="ml-2 font-bold text-black hover:text-blue-600 hover:underline uppercase"
+            >
+              LOG IN
             </button>
           </div>
         </div>

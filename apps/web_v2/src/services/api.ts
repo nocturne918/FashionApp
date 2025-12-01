@@ -22,26 +22,12 @@ interface ProductFilters {
 }
 
 class ApiService {
-  private getHeaders() {
-    const user = localStorage.getItem('fitted_user');
-    const token = user ? JSON.parse(user).token : null;
-
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
-
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    return headers;
-  }
-
   private async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
+      credentials: 'include',
       headers: {
-        ...this.getHeaders(),
+        'Content-Type': 'application/json',
         ...options.headers,
       },
     });
@@ -62,17 +48,12 @@ class ApiService {
     if (filters.search) params.append('search', filters.search);
     if (filters.category) params.append('category', filters.category);
     if (filters.department && filters.department !== 'ALL') {
-      // Map frontend 'department' to backend 'gender' if needed, or keep as is if backend supports it
-      // Based on previous analysis, backend uses 'gender'
       params.append('gender', filters.department.toLowerCase());
     }
     if (filters.brand) params.append('brand', filters.brand);
 
     const response = await this.fetch<PaginatedResponse<any>>(`/products?${params.toString()}`);
 
-    // Transform backend product to frontend Product type if necessary
-    // Backend returns: stockxId, title, urlKey, imageUrl, etc.
-    // Frontend expects: id, name, brand, price, category, etc.
     const data = response.data.map(this.transformProduct);
 
     return { ...response, data };

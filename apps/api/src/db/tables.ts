@@ -1,53 +1,60 @@
 import { pgTable, text, timestamp, boolean, integer, varchar, json, real, unique } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-// Users table (id is UUID, email is unique for login)
-export const users = pgTable('users', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  email: text('email').notNull().unique(),
-  name: text('name'),
-  avatar: text('avatar'),
-  passwordHash: text('password_hash'), // nullable for OAuth-only users
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+// Users table (Better Auth)
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  emailVerified: boolean("email_verified").notNull(),
+  image: text("image"),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
 });
 
-// Pending verifications for email signup
-export const pendingVerifications = pgTable('pending_verifications', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  email: text('email').notNull().unique(),
-  name: text('name'),
-  code: text('code').notNull(), // 6-digit code
-  expiresAt: timestamp('expires_at').notNull(),
-  attempts: integer('attempts').default(0).notNull(),
-  // createdAt: timestamp('created_at').defaultNow().notNull(),
+// Sessions table (Better Auth)
+export const session = pgTable("session", {
+  id: text("id").primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: text("token").notNull().unique(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  userId: text("user_id").notNull().references(() => user.id),
 });
 
-export const sessions = pgTable("session", {
-  sid: varchar("sid", { length: 255 }).primaryKey(),
-  sess: json("sess").notNull(),
-  expire: timestamp("expire", { withTimezone: true }).notNull(),
+// Accounts table (Better Auth)
+export const account = pgTable("account", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  providerId: text("provider_id").notNull(),
+  userId: text("user_id").notNull().references(() => user.id, { onDelete: 'cascade' }),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: text("scope"),
+  password: text("password"),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
 });
 
-// OAuth Accounts table
-export const accounts = pgTable('accounts', {
-  id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
-  provider: text('provider').notNull(), // 'google' or 'facebook'
-  providerAccountId: text('provider_account_id').notNull(),
-  accessToken: text('access_token'),
-  refreshToken: text('refresh_token'),
-  expiresAt: integer('expires_at'),
-  tokenType: text('token_type'),
-  scope: text('scope'),
-  idToken: text('id_token'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+// Verification table (Better Auth)
+export const verification = pgTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
 });
 
 // Outfits table
 export const outfits = pgTable('outfits', {
   id: text('id').primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   title: text('title').notNull(),
   description: text('description'),
   isPublic: boolean('is_public').default(false).notNull(),
@@ -85,22 +92,22 @@ export const products = pgTable('products', {
 });
 
 // Relations
-export const usersRelations = relations(users, ({ many }) => ({
-  accounts: many(accounts),
+export const userRelations = relations(user, ({ many }) => ({
+  accounts: many(account),
   outfits: many(outfits),
 }));
 
-export const accountsRelations = relations(accounts, ({ one }) => ({
-  user: one(users, {
-    fields: [accounts.userId],
-    references: [users.id],
+export const accountRelations = relations(account, ({ one }) => ({
+  user: one(user, {
+    fields: [account.userId],
+    references: [user.id],
   }),
 }));
 
 export const outfitsRelations = relations(outfits, ({ one, many }) => ({
-  user: one(users, {
+  user: one(user, {
     fields: [outfits.userId],
-    references: [users.id],
+    references: [user.id],
   }),
   items: many(outfitItems),
 }));

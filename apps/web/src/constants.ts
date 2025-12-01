@@ -21,4 +21,4 @@ export const MOCK_PRODUCTS: Product[] = [
   { id: '14', name: 'Kids Joggers', brand: 'NIKE', price: 40, category: ProductCategory.BOTTOMS, department: Department.KIDS, imageUrl: getImg(14, 'kidspants'), color: 'Grey', tags: ['kids', 'sport', 'comfy'] },
 ];
 
-export const TRENDING_TAGS = ['#gorpcore', '#y2k', '#cyberpunk', '#vintage', '#blokecore'];
+export const TRENDING_TAGS = ['#Yeezy', '#Gucci', '#Supreme', '#vintage', '#streetwear', '#accessories',];

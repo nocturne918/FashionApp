@@ -14,17 +14,17 @@ export const OutfitBuilder: React.FC<OutfitBuilderProps> = ({ items, setItems, o
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
-  // Initialize items with random positions if not set
+  // Initialize items with random positions if not set (but respect pre-positioned items)
   useEffect(() => {
     setItems(prev => prev.map(item => {
-      if (item.x === undefined) {
+      if (item.x === undefined || item.y === undefined) {
         return {
           ...item,
           x: Math.random() * 200,
           y: Math.random() * 200,
-          scale: 1,
-          rotation: (Math.random() - 0.5) * 20,
-          zIndex: 1
+          scale: item.scale ?? 1,
+          rotation: item.rotation ?? ((Math.random() - 0.5) * 20),
+          zIndex: item.zIndex ?? 1
         };
       }
       return item;
@@ -119,7 +119,7 @@ export const OutfitBuilder: React.FC<OutfitBuilderProps> = ({ items, setItems, o
       {/* Canvas */}
       <div 
         ref={canvasRef}
-        className="flex-grow relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] bg-gray-50"
+        className="grow relative overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] bg-gray-50"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
@@ -139,16 +139,18 @@ export const OutfitBuilder: React.FC<OutfitBuilderProps> = ({ items, setItems, o
             key={item.id}
             className={`absolute cursor-move select-none ${selectedId === item.id ? 'ring-2 ring-blue-600 ring-offset-2' : ''}`}
             style={{
-              transform: `translate(${item.x}px, ${item.y}px) rotate(${item.rotation}deg) scale(${item.scale})`,
-              zIndex: item.zIndex,
+              transform: `translate(${item.x}px, ${item.y}px) rotate(${item.rotation ?? 0}deg) scale(${item.scale ?? 1})`,
+              zIndex: item.zIndex ?? 1,
               width: '200px',
             }}
             onMouseDown={(e) => handleMouseDown(e, item.id)}
+            onClick={(e) => { e.stopPropagation(); setSelectedId(item.id); }}
           >
             <img 
               src={item.imageUrl} 
               alt={item.name}
-              className="w-full h-auto pointer-events-none mix-blend-multiply"
+              className={`w-full h-auto pointer-events-none ${item.placed ? '' : 'mix-blend-multiply'}`}
+              style={{ background: 'transparent' }}
             />
           </div>
         ))}

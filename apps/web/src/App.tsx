@@ -8,6 +8,7 @@ import { Lab } from './pages/Lab';
 import { Stash } from './pages/Stash';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { authClient } from './lib/auth-client';
+import { api } from './services/api';
 import type { Product, Outfit, OutfitItem } from '@fashionapp/shared';
 
 const AppContent = () => {
@@ -26,11 +27,57 @@ const AppContent = () => {
   // Load from local storage on mount
   useEffect(() => {
     const savedStash = localStorage.getItem('fitted_stash');
-    if (savedStash) setStashedProducts(JSON.parse(savedStash));
-    
+    if (savedStash) {
+      try {
+        setStashedProducts(JSON.parse(savedStash));
+      } catch (err) {
+        console.warn('Could not parse fitted_stash from localStorage, clearing corrupt value', err);
+        localStorage.removeItem('fitted_stash');
+        setStashedProducts([]);
+      }
+    }
+
     const savedFits = localStorage.getItem('fitted_outfits');
-    if (savedFits) setSavedOutfits(JSON.parse(savedFits));
+    if (savedFits) {
+      try {
+        setSavedOutfits(JSON.parse(savedFits));
+      } catch (err) {
+        console.warn('Could not parse fitted_outfits from localStorage, clearing corrupt value', err);
+        localStorage.removeItem('fitted_outfits');
+        setSavedOutfits([]);
+      }
+    }
   }, []);
+
+  // When user is present, prefer server-side saved outfits (merge/replace local)
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      if (!user) return;
+      try {
+        const serverOutfits = await api.getOutfits();
+        if (!mounted) return;
+        if (serverOutfits && serverOutfits.length > 0) {
+          // Merge server outfits with any local-only outfits (keep server as source-of-truth, but preserve local uniques)
+          setSavedOutfits(prevLocal => {
+            const serverMap = new Map(serverOutfits.map(o => [o.id, o]));
+            const merged = [...serverOutfits];
+            for (const local of prevLocal) {
+              if (!serverMap.has(local.id)) merged.push(local);
+            }
+            try { localStorage.setItem('fitted_outfits', JSON.stringify(merged)); } catch {}
+            return merged;
+          });
+        } else {
+          // Server returned no outfits — do not overwrite local saved outfits (preserve local optimistic saves)
+        }
+      } catch (e) {
+        // Not authenticated or API unavailable — keep local outfits
+        console.warn('Could not fetch server outfits, falling back to local', e);
+      }
+    })();
+    return () => { mounted = false; };
+  }, [user]);
 
   useEffect(() => {
     localStorage.setItem('fitted_stash', JSON.stringify(stashedProducts));
@@ -58,16 +105,48 @@ const AppContent = () => {
     navigate('/lab');
   };
 
-  const saveOutfit = () => {
+  const saveOutfit = async () => {
+    const tempId = Date.now().toString();
     const newOutfit: Outfit = {
-      id: Date.now().toString(),
+      id: tempId,
       name: `Fit #${savedOutfits.length + 1}`,
       items: currentOutfitItems,
       createdAt: Date.now()
     };
-    setSavedOutfits(prev => [newOutfit, ...prev]);
+
+    // Ensure all items in the outfit are present in the stash (union by id)
+    setStashedProducts(prev => {
+      const existingById = new Map(prev.map(p => [p.id, p]));
+      for (const it of currentOutfitItems) {
+        if (!existingById.has(it.id)) existingById.set(it.id, it as unknown as Product);
+      }
+      const next = Array.from(existingById.values());
+      try { localStorage.setItem('fitted_stash', JSON.stringify(next)); } catch {}
+      return next;
+    });
+
+    // Optimistically save locally so UI updates immediately (also write to localStorage immediately)
+    setSavedOutfits(prev => {
+      const next = [newOutfit, ...prev];
+      try { localStorage.setItem('fitted_outfits', JSON.stringify(next)); } catch {}
+      return next;
+    });
     setCurrentOutfitItems([]);
-    alert('Outfit saved to Stash!');
+
+    try {
+      // Try to persist to backend if available
+      const created = await api.createOutfit(newOutfit);
+      // If the server returned no items (products not present server-side), merge optimistic items
+      const merged = { ...created, items: (created.items && created.items.length > 0) ? created.items : newOutfit.items };
+      // Replace the optimistic entry (match by tempId)
+      setSavedOutfits(prev => [merged, ...prev.filter(o => o.id !== tempId)]);
+      alert('Outfit saved to server and Stash!');
+    } catch (e) {
+      // Fallback to local-only persistence
+      console.warn('Failed to save outfit to server, kept locally', e);
+      alert('Outfit saved locally (offline mode).');
+    }
+
     navigate('/stash');
   };
 
@@ -108,6 +187,9 @@ const AppContent = () => {
               setSavedOutfits={setSavedOutfits} 
               toggleStash={toggleStash} 
               addToFit={addToFit} 
+              currentOutfitItems={currentOutfitItems}
+              setCurrentOutfitItems={setCurrentOutfitItems}
+              saveOutfit={saveOutfit}
             />
           } />
         </Route>

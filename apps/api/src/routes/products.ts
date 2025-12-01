@@ -1,13 +1,13 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { db } from '../db/db';
 import { products } from '../db/tables';
 import { eq, ilike, or, and, sql, desc } from 'drizzle-orm';
-import { getStockXImage } from '../utils/image';
+import { toSharedProduct } from '../utils';
 
 const router = Router();
 
 // GET /api/products
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
@@ -61,12 +61,8 @@ router.get('/', async (req, res) => {
 
     const total = Number(countResult[0]?.count || 0);
 
-    // Process images
-    const processedResults = results.map(p => ({
-      ...p,
-      imageUrl: getStockXImage(p.imageUrl),
-      frontImageUrl: getStockXImage(p.frontImageUrl)
-    }));
+    // Process images and transform to shared type
+    const processedResults = results.map(toSharedProduct);
 
     res.json({
       data: processedResults,
@@ -84,7 +80,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/products/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -103,11 +99,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    res.json({
-      ...product,
-      imageUrl: getStockXImage(product.imageUrl),
-      frontImageUrl: getStockXImage(product.frontImageUrl)
-    });
+    res.json(toSharedProduct(product));
   } catch (error) {
     console.error('Error fetching product:', error);
     res.status(500).json({ error: 'Internal server error' });

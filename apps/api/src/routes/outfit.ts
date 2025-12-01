@@ -1,21 +1,16 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { db } from '../db/db';
-import { outfits, outfitItems, products } from '../db/tables';
+import { outfits, outfitItems } from '../db/tables';
 import { eq, desc } from 'drizzle-orm';
-import { authenticateJWT } from '../middleware/auth';
-import { getStockXImage } from '../utils/image';
+import { requireAuth } from '../middleware';
+import { toSharedOutfit } from '../utils';
 
 const router = Router();
 
 // Middleware to ensure user is authenticated
-const requireAuth = (req: Request, res: Response, next: Function) => {
-  if (!req.user) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  next();
-};
+// Imported requireAuth handles this
 
-router.use(authenticateJWT);
+router.use(requireAuth);
 
 // GET /api/outfits
 router.get('/', requireAuth, async (req, res) => {
@@ -32,18 +27,8 @@ router.get('/', requireAuth, async (req, res) => {
       }
     });
 
-    // Process images in the response
-    const processedOutfits = userOutfits.map(outfit => ({
-      ...outfit,
-      items: outfit.items.map(item => ({
-        ...item,
-        product: item.product ? {
-          ...item.product,
-          imageUrl: getStockXImage(item.product.imageUrl),
-          frontImageUrl: getStockXImage(item.product.frontImageUrl)
-        } : null
-      }))
-    }));
+    // Process images and transform to shared type
+    const processedOutfits = userOutfits.map(toSharedOutfit);
 
     res.json(processedOutfits);
   } catch (error) {
@@ -69,7 +54,7 @@ router.get('/:id', async (req, res) => {
           columns: {
             id: true,
             name: true,
-            avatar: true
+            image: true
           }
         }
       }
@@ -84,18 +69,8 @@ router.get('/:id', async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    // Process images
-    const processedOutfit = {
-      ...outfit,
-      items: outfit.items.map(item => ({
-        ...item,
-        product: item.product ? {
-          ...item.product,
-          imageUrl: getStockXImage(item.product.imageUrl),
-          frontImageUrl: getStockXImage(item.product.frontImageUrl)
-        } : null
-      }))
-    };
+    // Process images and transform to shared type
+    const processedOutfit = toSharedOutfit(outfit);
 
     res.json(processedOutfit);
   } catch (error) {

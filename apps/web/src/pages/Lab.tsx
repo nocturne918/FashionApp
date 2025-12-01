@@ -1,6 +1,6 @@
 import React from 'react';
 import { OutfitBuilder } from '../components/OutfitBuilder';
-import type { Product, OutfitItem } from '../types';
+import type { Product, OutfitItem } from '@fashionapp/shared';
 
 interface LabProps {
   stashedProducts: Product[];

@@ -1,5 +1,5 @@
-import { ProductCategory, Department } from './types';
-import type { Product } from './types';
+import { ProductCategory, Department } from '@fashionapp/shared';
+import type { Product } from '@fashionapp/shared';
 
 // Helper to generate mock images that look somewhat like clothes based on ID
 const getImg = (id: number, type: string) => `https://picsum.photos/seed/${type}${id}/400/400`;

@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import type { OutfitItem } from '../types';
+import type { OutfitItem } from '@fashionapp/shared';
 import { Icon } from '@iconify/react';
 
 interface OutfitBuilderProps {

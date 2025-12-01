@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import fittedLogo from '/assets/fitted.png';
-import type { User } from '../types';
+import type { User } from '@fashionapp/shared';
 
 interface NavbarProps {
   cartCount: number;

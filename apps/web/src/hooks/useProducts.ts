@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import type { Product } from '../types';
+import type { Product } from '@fashionapp/shared';
 import { api } from '../services/api';
 
 interface UseProductsOptions {

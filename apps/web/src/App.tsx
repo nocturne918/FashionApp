@@ -8,7 +8,7 @@ import { Lab } from './pages/Lab';
 import { Stash } from './pages/Stash';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { authClient } from './lib/auth-client';
-import type { Product, Outfit, OutfitItem } from './types';
+import type { Product, Outfit, OutfitItem } from '@fashionapp/shared';
 
 const AppContent = () => {
   const { user, loading } = useAuth();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon } from '@iconify/react';
 import { ProductCard } from '../components/ProductCard';
-import type { Product, Outfit } from '../types';
+import type { Product, Outfit } from '@fashionapp/shared';
 
 interface StashProps {
   stashedProducts: Product[];

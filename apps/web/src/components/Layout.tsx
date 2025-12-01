@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar } from './Navbar';
 import { Outlet } from 'react-router-dom';
-import type { User } from '../types';
+import type { User } from '@fashionapp/shared';
 
 interface LayoutProps {
   cartCount: number;

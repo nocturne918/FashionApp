@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Product } from '../types';
+import type { Product } from '@fashionapp/shared';
 import { Icon } from '@iconify/react';
 
 interface ProductCardProps {

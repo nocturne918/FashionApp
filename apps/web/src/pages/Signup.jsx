@@ -25,7 +25,7 @@ function Signup() {
     const [loading, setLoading] = useState(false);
     const [codeSent, setCodeSent] = useState(false);
     const navigate = useNavigate();
-    const { setAuthToken, setAuthUser } = useAuth();
+    const { setAuthUser } = useAuth();
 
     const handleChange = (e) => {
         setFormData({
@@ -75,9 +75,8 @@ function Signup() {
         setLoading(true);
 
         try {
-            const response = await completeSignup(formData.email, formData.password);
-            if (response.success && response.user && response.token) {
-                setAuthToken(response.token);
+            const response = await completeSignup(formData.email, formData.password, formData.name);
+            if (response.success && response.user) {
                 setAuthUser(response.user);
                 // Redirect to home page
                 navigate('/');
@@ -117,10 +116,10 @@ function Signup() {
                     {/* Logo on the left */}
                     <div className="login-nav-left">
                         <Link to="/">
-                            <img src={fitted} alt="Fitted" className="navbar-logo"/>
+                            <img src={fitted} alt="Fitted" className="navbar-logo" />
                         </Link>
                     </div>
-                    
+
                     {/* Right side navigation buttons */}
                     <div className='nav-right'>
                         <Link to="/search" aria-label="Search">
@@ -143,7 +142,7 @@ function Signup() {
             <div className="login-content">
                 <div className="login-form-container">
                     <h1 className="login-title">Sign Up</h1>
-                    
+
                     {error && (
                         <div className="error-message" style={{ color: 'red', marginBottom: '1rem', textAlign: 'center' }}>
                             {error}
@@ -155,42 +154,42 @@ function Signup() {
                         <form className="login-form" onSubmit={handleStartSignup}>
                             <div className="form-group">
                                 <label htmlFor="name">Full Name*</label>
-                                <input 
-                                    type="text" 
-                                    id="name" 
+                                <input
+                                    type="text"
+                                    id="name"
                                     name="name"
-                                    placeholder="Full Name*" 
+                                    placeholder="Full Name*"
                                     value={formData.name}
                                     onChange={handleChange}
                                     required
                                     disabled={loading}
                                 />
                             </div>
-                            
+
                             <div className="form-group">
                                 <label htmlFor="email">Email Address*</label>
-                                <input 
-                                    type="email" 
-                                    id="email" 
+                                <input
+                                    type="email"
+                                    id="email"
                                     name="email"
-                                    placeholder="Email Address*" 
+                                    placeholder="Email Address*"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
                                     disabled={loading}
                                 />
                             </div>
-                            
+
                             <button type="submit" className="signup-submit-btn" disabled={loading}>
                                 {loading ? 'Sending code...' : 'Continue'}
                             </button>
-                            
+
                             <div className="or-divider">
                                 <span>OR</span>
                             </div>
-                            
+
                             <p className="signup-with-text">Sign up with</p>
-                            
+
                             <div className="social-login-buttons">
                                 <button type="button" className="social-btn" onClick={handleGoogleSignup}>
                                     <img src={googleLogo} alt="Google" />
@@ -199,7 +198,7 @@ function Signup() {
                                     <img src={facebookLogo} alt="Facebook" className="facebook-logo" />
                                 </button>
                             </div>
-                            
+
                             <div className="signup-link">
                                 <p>Already have an account? <Link to="/login" className="link-button">Log In</Link></p>
                             </div>
@@ -215,14 +214,14 @@ function Signup() {
                                     <p style={{ fontWeight: 'bold' }}>{formData.email}</p>
                                 </div>
                             )}
-                            
+
                             <div className="form-group">
                                 <label htmlFor="code">Verification Code*</label>
-                                <input 
-                                    type="text" 
-                                    id="code" 
+                                <input
+                                    type="text"
+                                    id="code"
                                     name="code"
-                                    placeholder="Enter 6-digit code" 
+                                    placeholder="Enter 6-digit code"
                                     value={formData.code}
                                     onChange={handleChange}
                                     required
@@ -232,14 +231,14 @@ function Signup() {
                                     style={{ textAlign: 'center', fontSize: '1.5rem', letterSpacing: '0.5rem' }}
                                 />
                             </div>
-                            
+
                             <button type="submit" className="signup-submit-btn" disabled={loading}>
                                 {loading ? 'Verifying...' : 'Verify Code'}
                             </button>
-                            
-                            <button 
-                                type="button" 
-                                className="link-button" 
+
+                            <button
+                                type="button"
+                                className="link-button"
                                 onClick={handleBack}
                                 style={{ marginTop: '1rem' }}
                             >
@@ -254,18 +253,18 @@ function Signup() {
                             <div className="form-group">
                                 <label htmlFor="password">Password*</label>
                                 <div className="password-input-wrapper">
-                                    <input 
+                                    <input
                                         type={showPassword ? "text" : "password"}
-                                        id="password" 
+                                        id="password"
                                         name="password"
-                                        placeholder="Password*" 
+                                        placeholder="Password*"
                                         value={formData.password}
                                         onChange={handleChange}
                                         required
                                         minLength="8"
                                         disabled={loading}
                                     />
-                                    <button 
+                                    <button
                                         type="button"
                                         className="password-toggle"
                                         onClick={() => setShowPassword(!showPassword)}
@@ -273,27 +272,27 @@ function Signup() {
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             {showPassword ? (
                                                 <>
-                                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                                    <line x1="1" y1="1" x2="23" y2="23" />
                                                 </>
                                             ) : (
                                                 <>
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                                    <circle cx="12" cy="12" r="3"/>
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                    <circle cx="12" cy="12" r="3" />
                                                 </>
                                             )}
                                         </svg>
                                     </button>
                                 </div>
                             </div>
-                            
+
                             <button type="submit" className="signup-submit-btn" disabled={loading}>
                                 {loading ? 'Completing signup...' : 'Complete Sign Up'}
                             </button>
-                            
-                            <button 
-                                type="button" 
-                                className="link-button" 
+
+                            <button
+                                type="button"
+                                className="link-button"
                                 onClick={handleBack}
                                 style={{ marginTop: '1rem' }}
                             >
@@ -303,7 +302,7 @@ function Signup() {
                     )}
                 </div>
             </div>
-            
+
             {/* Graffiti Background */}
             <div className="login-graffiti-background">
                 <img src={graffiti} alt="Graffiti" className="login-graffiti-image" />

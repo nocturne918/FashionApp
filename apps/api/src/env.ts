@@ -30,11 +30,6 @@ export const env = {
   FACEBOOK_APP_ID: process.env.FACEBOOK_APP_ID || '',
   FACEBOOK_APP_SECRET: process.env.FACEBOOK_APP_SECRET || '',
 
-  // Auth
-  CALLBACK_URL: process.env.CALLBACK_URL || 'http://localhost:3000/api/auth/callback',
-  JWT_SECRET: process.env.JWT_SECRET || 'default-jwt-secret-change-me',
-  SESSION_SECRET: process.env.SESSION_SECRET || 'default-session-secret-change-me',
-
   // App
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
   PORT: process.env.PORT || '3000',

@@ -2,20 +2,15 @@ import { Router, Request, Response } from 'express';
 import { db } from '../db/db';
 import { outfits, outfitItems, products } from '../db/tables';
 import { eq, desc } from 'drizzle-orm';
-import { authenticateJWT } from '../middleware/auth';
-import { getStockXImage } from '../utils/image';
+import { requireAuth } from '../middleware';
+import { getStockXImage } from '../utils';
 
 const router = Router();
 
 // Middleware to ensure user is authenticated
-const requireAuth = (req: Request, res: Response, next: Function) => {
-  if (!req.user) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  next();
-};
+// Imported requireAuth handles this
 
-router.use(authenticateJWT);
+router.use(requireAuth);
 
 // GET /api/outfits
 router.get('/', requireAuth, async (req, res) => {
@@ -69,7 +64,7 @@ router.get('/:id', async (req, res) => {
           columns: {
             id: true,
             name: true,
-            avatar: true
+            image: true
           }
         }
       }

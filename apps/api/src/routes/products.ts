@@ -1,13 +1,13 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { db } from '../db/db';
 import { products } from '../db/tables';
 import { eq, ilike, or, and, sql, desc } from 'drizzle-orm';
-import { getStockXImage } from '../utils/image';
+import { getStockXImage } from '../utils';
 
 const router = Router();
 
 // GET /api/products
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
@@ -84,7 +84,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/products/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 

@@ -1,13 +1,10 @@
 import express from 'express';
-// Remove direct express-session import, use our session service
-
-import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import authRouter from './routes/auth';
+import { toNodeHandler } from 'better-auth/node';
+import { auth } from './auth';
 import productsRouter from './routes/products';
 import outfitRouter from './routes/outfit';
 import { env } from './env';
-import { configureSession } from './services/session';
 
 const app = express();
 
@@ -31,19 +28,16 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
-app.use(cookieParser());
 
-configureSession(app);
-
+// Mount Better Auth handler
+app.all('/api/auth/*', toNodeHandler(auth));
 
 // Test route
 app.get('/api/test', (req, res) => {
   res.json({ status: 'okay' });
 });
 
-
-// Mount organized auth router
-app.use('/api/auth', authRouter);
+// Mount routes
 app.use('/api/products', productsRouter);
 app.use('/api/outfits', outfitRouter);
 

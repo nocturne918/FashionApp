@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { getCurrentUser } from '../services/authApi';
+import { authClient } from '../lib/auth-client';
 
 const AuthContext = createContext(null);
 
@@ -12,62 +12,22 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
+  const { data: session, isPending } = authClient.useSession();
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  // Load token from localStorage on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem('auth_token');
-    if (storedToken) {
-      setToken(storedToken);
-      // Optionally verify token by fetching user
-      getCurrentUser(storedToken)
-        .then((data) => {
-          setUser(data.user);
-        })
-        .catch(() => {
-          // Token is invalid, remove it
-          localStorage.removeItem('auth_token');
-          setToken(null);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+    if (session?.user) {
+      setUser(session.user);
     } else {
-      setLoading(false);
-    }
-  }, []);
-
-  const setAuthToken = (newToken) => {
-    if (newToken) {
-      localStorage.setItem('auth_token', newToken);
-      setToken(newToken);
-    } else {
-      localStorage.removeItem('auth_token');
-      setToken(null);
       setUser(null);
     }
-  };
-
-  const setAuthUser = (userData) => {
-    setUser(userData);
-  };
-
-  const clearAuth = () => {
-    localStorage.removeItem('auth_token');
-    setToken(null);
-    setUser(null);
-  };
+  }, [session]);
 
   const value = {
     user,
-    token,
-    loading,
-    setAuthToken,
-    setAuthUser,
-    clearAuth,
-    isAuthenticated: !!user && !!token,
+    loading: isPending,
+    isAuthenticated: !!user,
+    setAuthUser: setUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

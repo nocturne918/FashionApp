@@ -1,9 +1,9 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { db } from '../db/db';
-import { outfits, outfitItems, products } from '../db/tables';
+import { outfits, outfitItems } from '../db/tables';
 import { eq, desc } from 'drizzle-orm';
 import { requireAuth } from '../middleware';
-import { getStockXImage } from '../utils';
+import { toSharedOutfit } from '../utils';
 
 const router = Router();
 
@@ -27,18 +27,8 @@ router.get('/', requireAuth, async (req, res) => {
       }
     });
 
-    // Process images in the response
-    const processedOutfits = userOutfits.map(outfit => ({
-      ...outfit,
-      items: outfit.items.map(item => ({
-        ...item,
-        product: item.product ? {
-          ...item.product,
-          imageUrl: getStockXImage(item.product.imageUrl),
-          frontImageUrl: getStockXImage(item.product.frontImageUrl)
-        } : null
-      }))
-    }));
+    // Process images and transform to shared type
+    const processedOutfits = userOutfits.map(toSharedOutfit);
 
     res.json(processedOutfits);
   } catch (error) {
@@ -79,18 +69,8 @@ router.get('/:id', async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
 
-    // Process images
-    const processedOutfit = {
-      ...outfit,
-      items: outfit.items.map(item => ({
-        ...item,
-        product: item.product ? {
-          ...item.product,
-          imageUrl: getStockXImage(item.product.imageUrl),
-          frontImageUrl: getStockXImage(item.product.frontImageUrl)
-        } : null
-      }))
-    };
+    // Process images and transform to shared type
+    const processedOutfit = toSharedOutfit(outfit);
 
     res.json(processedOutfit);
   } catch (error) {

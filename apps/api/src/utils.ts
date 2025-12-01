@@ -57,3 +57,38 @@ export function getStockXImage(url: string | null, width: number = 800): string 
 
   return url;
 }
+
+import { Product, Department } from '@fashionapp/shared';
+
+export function toSharedProduct(p: any): Product {
+  return {
+    id: p.id,
+    name: p.title,
+    brand: p.brand || '',
+    price: p.lowestAsk || 0,
+    category: p.category || '',
+    imageUrl: getStockXImage(p.imageUrl) || '',
+    department: (p.gender?.toUpperCase() as Department) || 'UNISEX',
+    color: 'Multi', // Default as colorway is not in DB yet
+    tags: []
+  };
+}
+
+import { Outfit, OutfitItem } from '@fashionapp/shared';
+
+export function toSharedOutfit(o: any): Outfit {
+  return {
+    id: o.id,
+    name: o.title,
+    createdAt: new Date(o.createdAt).getTime(),
+    items: o.items?.map((i: any) => {
+      if (!i.product) return null;
+      const product = toSharedProduct(i.product);
+      return {
+        ...product,
+        // Map slot to some positioning if needed, or leave undefined
+        // For now, we just return the product data as an OutfitItem
+      } as OutfitItem;
+    }).filter(Boolean) || []
+  };
+}

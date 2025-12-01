@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { ProductCard } from '../components/ProductCard';
-import { ProductCategory, Department } from '../types';
-import type { Product } from '../types';
+import { ProductCategory, Department } from '@fashionapp/shared';
+import type { Product } from '@fashionapp/shared';
 import { TRENDING_TAGS } from '../constants';
 import { useProducts } from '../hooks/useProducts';
 

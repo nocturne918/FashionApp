@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { Logo } from "./Logo";
 import { Icon } from "@iconify/react";
 import { authClient } from "../lib/auth-client";
+import { useAuth } from "../contexts/AuthContext";
 
 interface LoginViewProps {
   onSwitchToSignup: () => void;
 }
 
 export const LoginView: React.FC<LoginViewProps> = ({ onSwitchToSignup }) => {
+  const { setAuthUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -78,10 +80,26 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSwitchToSignup }) => {
     setError("");
     setIsLoading(true);
 
-    setTimeout(() => {
-      setError("Guest access is currently disabled.");
-      setIsLoading(false);
-    }, 800);
+    // Create a guest user object
+    const guestUser = {
+      id: `guest-${Date.now()}`,
+      email: "guest@fitted.com",
+      name: "Guest User",
+      emailVerified: false,
+      image: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    // Set the guest user in AuthContext
+    setAuthUser(guestUser as any);
+
+    // Store guest status in localStorage
+    localStorage.setItem("fitted_guest_mode", "true");
+    localStorage.setItem("fitted_guest_user", JSON.stringify(guestUser));
+
+    setIsLoading(false);
+    // The AuthContext update will trigger a re-render and the user will be logged in
   };
 
   return (

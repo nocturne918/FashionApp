@@ -23,6 +23,7 @@ export interface Product {
   brand: string;
   price: number;
   category: string;
+  parentCategory?: string;
   imageUrl: string;
   department: Department;
   color: string;

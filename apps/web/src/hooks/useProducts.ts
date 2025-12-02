@@ -5,8 +5,9 @@ import { api } from '../services/api';
 interface UseProductsOptions {
   limit?: number;
   search?: string;
-  category?: string;
+  category?: string | string[];
   department?: string;
+  parentCategory?: string;
   brand?: string;
 }
 
@@ -40,8 +41,10 @@ export const useProducts = (initialOptions: UseProductsOptions = {}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     initialOptions.search,
-    initialOptions.category,
+    // For category, support array or string
+    Array.isArray(initialOptions.category) ? initialOptions.category.join(',') : initialOptions.category,
     initialOptions.department,
+    initialOptions.parentCategory,
     initialOptions.brand,
     fetchProducts
   ]);

@@ -37,6 +37,10 @@ export const account = pgTable("account", {
   refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
   scope: text("scope"),
   password: text("password"),
+  // Account lockout tracking
+  failedAttempts: integer('failed_attempts').default(0).notNull(),
+  locked: boolean('locked').default(false).notNull(),
+  lockedAt: timestamp('locked_at'),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
 });

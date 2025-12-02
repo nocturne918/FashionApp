@@ -32,7 +32,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToStash,
       </div>
 
       {/* Info Area */}
-      <div className="p-3 flex flex-col flex-grow justify-between">
+      <div className="p-3 flex flex-col grow justify-between">
         <div>
           <div className="flex justify-between items-start">
             <h3 className="font-bold text-sm uppercase leading-tight truncate pr-2">{product.brand}</h3>

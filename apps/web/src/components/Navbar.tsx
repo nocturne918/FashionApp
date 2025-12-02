@@ -49,7 +49,7 @@ export const Navbar: React.FC<NavbarProps> = ({ cartCount, user, onLogout }) => 
         </button>
 
         <Link to="/" className="block">
-           <img src={fittedLogo} alt="FITTED" className="h-8 object-contain" />
+           <img src={fittedLogo} alt="FITTED" className="h-12 object-contain" />
         </Link>
 
         {/* Desktop Nav */}

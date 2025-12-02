@@ -66,11 +66,11 @@ export const SignupView: React.FC<SignupViewProps> = ({ onSwitchToLogin }) => {
           </div>
 
           {/* Abstract background element */}
-          <div className="absolute -top-10 -left-10 w-64 h-64 border-[20px] border-black rounded-full opacity-10 blur-xl"></div>
+          <div className="absolute -top-10 -left-10 w-64 h-64 border-20 border-black rounded-full opacity-10 blur-xl"></div>
         </div>
 
         {/* Right Side: Form */}
-        <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+        <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px]">
           <div className="mb-8 scale-75 origin-left">
             <Logo />
           </div>
@@ -118,7 +118,7 @@ export const SignupView: React.FC<SignupViewProps> = ({ onSwitchToLogin }) => {
             <button 
               type="submit" 
               disabled={isLoading}
-              className="w-full bg-black text-white font-bold uppercase py-4 border-2 border-transparent hover:bg-blue-600 hover:border-blue-600 hard-shadow active:translate-y-[2px] active:shadow-none transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-black text-white font-bold uppercase py-4 border-2 border-transparent hover:bg-blue-600 hover:border-blue-600 hard-shadow active:translate-y-0.5 active:shadow-none transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Creating Account...' : (
                 <>Create Account <Icon icon="lucide:arrow-right" width={18} height={18} /></>
@@ -129,9 +129,9 @@ export const SignupView: React.FC<SignupViewProps> = ({ onSwitchToLogin }) => {
 
           {/* Google Signup Divider */}
           <div className="relative flex py-5 items-center">
-              <div className="flex-grow border-t border-gray-300"></div>
-              <span className="flex-shrink-0 mx-4 text-gray-400 text-[10px] font-mono uppercase tracking-widest">or</span>
-              <div className="flex-grow border-t border-gray-300"></div>
+              <div className="grow border-t border-gray-300"></div>
+              <span className="shrink-0 mx-4 text-gray-400 text-[10px] font-mono uppercase tracking-widest">or</span>
+              <div className="grow border-t border-gray-300"></div>
           </div>
 
           {/* Google Signup */}
@@ -140,7 +140,7 @@ export const SignupView: React.FC<SignupViewProps> = ({ onSwitchToLogin }) => {
               type="button"
               onClick={handleGoogleSignup}
               disabled={isLoading}
-              className="w-full bg-white text-black font-bold uppercase py-3 border-2 border-black hover:bg-gray-50 hard-shadow active:translate-y-[2px] active:shadow-none transition-all flex justify-center items-center gap-2 text-xs tracking-widest disabled:opacity-50"
+                className="w-full bg-white text-black font-bold uppercase py-3 border-2 border-black hover:bg-gray-50 hard-shadow active:translate-y-0.5 active:shadow-none transition-all flex justify-center items-center gap-2 text-xs tracking-widest disabled:opacity-50"
             >
               <Icon icon="logos:google-icon" width={16} height={16} /> Continue with Google
             </button>

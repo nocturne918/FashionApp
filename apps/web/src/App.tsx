@@ -14,6 +14,7 @@ import type { Product, Outfit, OutfitItem } from "@fashionapp/shared";
 const AppContent = () => {
   const { user, loading } = useAuth();
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
+  const [isLoaded, setIsLoaded] = useState(false);
   const [stashedProducts, setStashedProducts] = useState<Product[]>(() => {
     const saved = localStorage.getItem("fitted_stash");
     if (saved) {
@@ -27,7 +28,18 @@ const AppContent = () => {
     return [];
   });
   const [currentOutfitItems, setCurrentOutfitItems] = useState<OutfitItem[]>(
-    []
+    () => {
+      const saved = localStorage.getItem("fitted_currentOutfitItems");
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          localStorage.removeItem("fitted_currentOutfitItems");
+          return [];
+        }
+      }
+      return [];
+    }
   );
   const [savedOutfits, setSavedOutfits] = useState<Outfit[]>(() => {
     const saved = localStorage.getItem("fitted_outfits");
@@ -44,6 +56,9 @@ const AppContent = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
+    // Clear guest mode if it exists
+    localStorage.removeItem("fitted_guest_mode");
+    localStorage.removeItem("fitted_guest_user");
     await authClient.signOut();
   };
 
@@ -82,21 +97,58 @@ const AppContent = () => {
     };
   }, [user]);
 
+  // Mark as loaded after initial mount to prevent overwriting localStorage
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
   // Persist to local storage on changes
   useEffect(() => {
-    localStorage.setItem("fitted_stash", JSON.stringify(stashedProducts));
-  }, [stashedProducts]);
+    if (!isLoaded) return;
+    try {
+      localStorage.setItem("fitted_stash", JSON.stringify(stashedProducts));
+    } catch (e) {
+      console.warn("Failed to save stash to localStorage:", e);
+    }
+  }, [stashedProducts, isLoaded]);
 
   useEffect(() => {
-    localStorage.setItem("fitted_outfits", JSON.stringify(savedOutfits));
-  }, [savedOutfits]);
+    if (!isLoaded) return;
+    try {
+      localStorage.setItem(
+        "fitted_currentOutfitItems",
+        JSON.stringify(currentOutfitItems)
+      );
+    } catch (e) {
+      console.warn("Failed to save currentOutfitItems to localStorage:", e);
+    }
+  }, [currentOutfitItems, isLoaded]);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    try {
+      localStorage.setItem("fitted_outfits", JSON.stringify(savedOutfits));
+    } catch (e) {
+      console.warn("Failed to save outfits to localStorage:", e);
+    }
+  }, [savedOutfits, isLoaded]);
 
   const toggleStash = (product: Product) => {
-    if (stashedProducts.find((p) => p.id === product.id)) {
-      setStashedProducts((prev) => prev.filter((p) => p.id !== product.id));
-    } else {
-      setStashedProducts((prev) => [...prev, product]);
-    }
+    setStashedProducts((prev) => {
+      const isStashed = prev.find((p) => p.id === product.id);
+      const next = isStashed
+        ? prev.filter((p) => p.id !== product.id)
+        : [...prev, product];
+
+      // Persist to localStorage immediately
+      try {
+        localStorage.setItem("fitted_stash", JSON.stringify(next));
+      } catch (e) {
+        console.warn("Failed to save stash to localStorage:", e);
+      }
+
+      return next;
+    });
   };
 
   const addToFit = (product: Product) => {
@@ -106,60 +158,171 @@ const AppContent = () => {
     navigate("/lab");
   };
 
-  const saveOutfit = async () => {
-    const tempId = Date.now().toString();
-    const newOutfit: Outfit = {
-      id: tempId,
-      name: `Fit #${savedOutfits.length + 1}`,
-      items: currentOutfitItems,
-      createdAt: Date.now(),
-    };
-
-    // Ensure all items in the outfit are present in the stash
-    setStashedProducts((prev) => {
-      const existingById = new Map(prev.map((p) => [p.id, p]));
-      for (const it of currentOutfitItems) {
-        if (!existingById.has(it.id))
-          existingById.set(it.id, it as unknown as Product);
-      }
-      const next = Array.from(existingById.values());
-      try {
-        localStorage.setItem("fitted_stash", JSON.stringify(next));
-      } catch {
-        // Ignore localStorage errors
-      }
-      return next;
-    });
-
-    // Optimistically save locally
-    setSavedOutfits((prev) => {
-      const next = [newOutfit, ...prev];
-      try {
-        localStorage.setItem("fitted_outfits", JSON.stringify(next));
-      } catch {
-        // Ignore localStorage errors
-      }
-      return next;
-    });
-    setCurrentOutfitItems([]);
-
+  const saveOutfit = async (
+    imageUrl?: string,
+    itemsToSave?: OutfitItem[],
+    imageSource?: "components" | "canvas" | "edited"
+  ) => {
     try {
-      const created = await api.createOutfit(newOutfit);
-      const merged = {
-        ...created,
-        items: created.items?.length > 0 ? created.items : newOutfit.items,
-      };
-      setSavedOutfits((prev) => [
-        merged,
-        ...prev.filter((o) => o.id !== tempId),
-      ]);
-      alert("Outfit saved to server and Stash!");
-    } catch (e) {
-      console.warn("Failed to save outfit to server, kept locally", e);
-      alert("Outfit saved locally (offline mode).");
-    }
+      // Use provided items or fall back to currentOutfitItems
+      const items = itemsToSave || currentOutfitItems;
 
-    navigate("/stash");
+      // Always compress images to ensure they fit in localStorage
+      let finalImageUrl: string | undefined = imageUrl;
+      if (imageUrl && imageUrl.startsWith("data:image/")) {
+        try {
+          const sizeInBytes = new Blob([imageUrl]).size;
+          const sizeInMB = sizeInBytes / (1024 * 1024);
+
+          // Compress if image is >1MB to ensure it fits in localStorage
+
+          if (sizeInMB > 1) {
+            console.log(
+              `Compressing image (${sizeInMB.toFixed(2)}MB) before saving...`
+            );
+            // Try to compress the image
+            const compressed = await compressImage(imageUrl, 800, 0.6);
+            if (compressed) {
+              const compressedSize =
+                new Blob([compressed]).size / (1024 * 1024);
+              console.log(`Compressed to ${compressedSize.toFixed(2)}MB`);
+              finalImageUrl = compressed;
+            } else {
+              console.warn(
+                "Could not compress image, saving outfit without image"
+              );
+              finalImageUrl = undefined;
+            }
+          } else {
+            console.log(`Image is ${sizeInMB.toFixed(2)}MB, saving as-is`);
+          }
+        } catch (e) {
+          console.error("Error processing image:", e);
+          // If compression fails, don't save the image to prevent errors
+          finalImageUrl = undefined;
+        }
+      }
+
+      const newOutfit: Outfit = {
+        id: Date.now().toString(),
+        name: `Fit #${savedOutfits.length + 1}`,
+        items: items,
+        createdAt: Date.now(),
+        imageUrl: finalImageUrl,
+        imageSource: imageSource,
+      };
+
+      // Log what we're saving
+      if (finalImageUrl) {
+        const savedSize = new Blob([finalImageUrl]).size / (1024 * 1024);
+        console.log(
+          `Saving outfit "${newOutfit.name}" with image (${savedSize.toFixed(
+            2
+          )}MB)`
+        );
+      } else {
+        console.log(`Saving outfit "${newOutfit.name}" without image`);
+      }
+
+      // Ensure all items in the outfit are present in the stash
+      setStashedProducts((prev) => {
+        const existingById = new Map(prev.map((p) => [p.id, p]));
+        for (const it of items) {
+          if (!existingById.has(it.id))
+            existingById.set(it.id, it as unknown as Product);
+        }
+        const next = Array.from(existingById.values());
+        try {
+          localStorage.setItem("fitted_stash", JSON.stringify(next));
+        } catch {
+          // Ignore localStorage errors
+        }
+        return next;
+      });
+
+      // save locally
+      setSavedOutfits((prev) => {
+        const next = [newOutfit, ...prev];
+        try {
+          localStorage.setItem("fitted_outfits", JSON.stringify(next));
+        } catch {
+          // Ignore localStorage errors
+        }
+        return next;
+      });
+      setCurrentOutfitItems([]);
+
+      try {
+        const created = await api.createOutfit(newOutfit);
+        const merged = {
+          ...created,
+          items: created.items?.length > 0 ? created.items : newOutfit.items,
+          imageUrl: finalImageUrl || created.imageUrl,
+        };
+        setSavedOutfits((prev) => [
+          merged,
+          ...prev.filter((o) => o.id !== newOutfit.id),
+        ]);
+        alert("Outfit saved to server and Stash!");
+      } catch (e) {
+        console.warn("Failed to save outfit to server, kept locally", e);
+        alert("Outfit saved locally (offline mode).");
+      }
+
+      // Don't navigate
+    } catch (error) {
+      console.error("Error saving outfit:", error);
+      alert("Error saving outfit. Please try again.");
+    }
+  };
+
+  // Helper function to compress images
+  const compressImage = (
+    dataUrl: string,
+    maxWidth = 800,
+    quality = 0.7
+  ): Promise<string | null> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        // Calculate new dimensions
+        if (width > maxWidth) {
+          height = (height * maxWidth) / width;
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+
+        try {
+          const compressed = canvas.toDataURL("image/jpeg", quality);
+          const compressedSize = new Blob([compressed]).size / (1024 * 1024);
+          console.log(
+            `Compressed image from ${
+              new Blob([dataUrl]).size / (1024 * 1024)
+            }MB to ${compressedSize.toFixed(2)}MB`
+          );
+          resolve(compressed);
+        } catch (e) {
+          console.error("Error compressing image:", e);
+          resolve(null);
+        }
+      };
+      img.onerror = () => resolve(null);
+      img.src = dataUrl;
+    });
   };
 
   if (loading) {
@@ -204,9 +367,12 @@ const AppContent = () => {
           element={
             <Lab
               stashedProducts={stashedProducts}
+              savedOutfits={savedOutfits}
+              setSavedOutfits={setSavedOutfits}
+              toggleStash={toggleStash}
+              addToFit={addToFit}
               currentOutfitItems={currentOutfitItems}
               setCurrentOutfitItems={setCurrentOutfitItems}
-              addToFit={addToFit}
               saveOutfit={saveOutfit}
             />
           }

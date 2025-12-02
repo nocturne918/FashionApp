@@ -36,6 +36,7 @@ export interface OutfitItem extends Product {
   rotation?: number;
   scale?: number;
   zIndex?: number;
+  placed?: boolean;
 }
 
 export interface Outfit {
@@ -43,6 +44,8 @@ export interface Outfit {
   name: string;
   items: OutfitItem[];
   createdAt: number;
+  imageUrl?: string;
+  imageSource?: 'components' | 'canvas' | 'edited'; // Track where the image came from
 }
 
 export interface User {

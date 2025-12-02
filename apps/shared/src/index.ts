@@ -23,6 +23,7 @@ export interface Product {
   brand: string;
   price: number;
   category: string;
+  parentCategory?: string;
   imageUrl: string;
   department: Department;
   color: string;
@@ -52,4 +53,14 @@ export interface User {
   image?: string | null;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }

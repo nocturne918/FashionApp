@@ -1,39 +1,45 @@
-import type { Product, Outfit } from '@fashionapp/shared';
+import type { Product, Outfit, PaginatedResponse } from "@fashionapp/shared";
 
-const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000') + '/api';
-
-interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
+const API_BASE_URL =
+  (import.meta.env.VITE_API_URL || "http://localhost:3000") + "/api";
 
 interface ProductFilters {
   page?: number;
   limit?: number;
   search?: string;
-  category?: string;
-  department?: string; // Mapped to gender in backend
+  category?: string | string[];
+  department?: string;
+  parentCategory?: string;
   brand?: string;
 }
 
+interface FiltersResponse {
+  genders: string[];
+  categories: string[];
+  parentCategories: string[];
+  topCategories?: string[];
+}
+
 class ApiService {
-  private async fetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  private latestFilters?: FiltersResponse;
+
+  private async fetch<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
-      credentials: 'include',
+      credentials: "include",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...options.headers,
       },
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      const error = await response
+        .json()
+        .catch(() => ({ error: "Unknown error" }));
       throw new Error(error.error || `API Error: ${response.statusText}`);
     }
 
@@ -41,82 +47,67 @@ class ApiService {
   }
 
   // Products
-  async getProducts(filters: ProductFilters = {}): Promise<PaginatedResponse<Product>> {
+  async getProducts(
+    filters: ProductFilters = {}
+  ): Promise<PaginatedResponse<Product>> {
     const params = new URLSearchParams();
-    if (filters.page) params.append('page', filters.page.toString());
-    if (filters.limit) params.append('limit', filters.limit.toString());
-    if (filters.search) params.append('search', filters.search);
-    if (filters.category) params.append('category', filters.category);
-    if (filters.department && filters.department !== 'ALL') {
-      params.append('gender', filters.department.toLowerCase());
+    if (filters.page) params.append("page", filters.page.toString());
+    if (filters.limit) params.append("limit", filters.limit.toString());
+    if (filters.search) params.append("search", filters.search);
+    if (filters.category) {
+      if (Array.isArray(filters.category)) {
+        for (const c of filters.category) {
+          params.append("category", c);
+        }
+      } else {
+        params.append("category", filters.category);
+      }
     }
-    if (filters.brand) params.append('brand', filters.brand);
+    if (filters.brand) params.append("brand", filters.brand);
+    if (filters.parentCategory)
+      params.append("parentCategory", filters.parentCategory);
 
-    const response = await this.fetch<PaginatedResponse<any>>(`/products?${params.toString()}`);
+    return this.fetch<PaginatedResponse<Product>>(
+      `/products?${params.toString()}`
+    );
+  }
 
-    const data = response.data.map(this.transformProduct);
-
-    return { ...response, data };
+  // Fetch available filter values from backend
+  async getFilters(): Promise<FiltersResponse> {
+    if (this.latestFilters) return this.latestFilters;
+    const res = await this.fetch<FiltersResponse>(`/products/filters`);
+    this.latestFilters = res;
+    return res;
   }
 
   async getProduct(id: string): Promise<Product> {
-    const product = await this.fetch<any>(`/products/${id}`);
-    return this.transformProduct(product);
+    return this.fetch<Product>(`/products/${id}`);
   }
 
   // Outfits
   async getOutfits(): Promise<Outfit[]> {
-    const outfits = await this.fetch<any[]>('/outfits');
-    return outfits.map(this.transformOutfit);
+    return this.fetch<Outfit[]>("/outfits");
   }
 
   async getOutfit(id: string): Promise<Outfit> {
-    const outfit = await this.fetch<any>(`/outfits/${id}`);
-    return this.transformOutfit(outfit);
+    return this.fetch<Outfit>(`/outfits/${id}`);
   }
 
   async createOutfit(outfit: Partial<Outfit>): Promise<Outfit> {
-    // Transform frontend outfit to backend payload
     const payload = {
       title: outfit.name,
-      description: 'Created via FITTED Lab',
+      description: "Created via FITTED Lab",
       isPublic: false,
       items: outfit.items?.map((item, index) => ({
         productId: item.id,
-        slot: `slot_${index}` // Simple slot assignment
-      }))
+        slot: `slot_${index}`,
+      })),
     };
 
-    const newOutfit = await this.fetch<any>('/outfits', {
-      method: 'POST',
+    return this.fetch<Outfit>("/outfits", {
+      method: "POST",
       body: JSON.stringify(payload),
     });
-
-    return this.transformOutfit(newOutfit);
-  }
-
-  // Transformers
-  private transformProduct(p: any): Product {
-    return {
-      id: p.id,
-      name: p.title,
-      brand: p.brand,
-      price: p.lowestAsk || p.retailPrice || 0,
-      category: p.category, // Ensure enum match or map
-      imageUrl: p.imageUrl,
-      department: (p.gender?.toUpperCase() as any) || 'UNISEX',
-      color: p.colorway || 'Multi',
-      tags: [] // Backend might not have tags yet
-    };
-  }
-
-  private transformOutfit(o: any): Outfit {
-    return {
-      id: o.id,
-      name: o.title,
-      items: o.items?.map((i: any) => this.transformProduct(i.product)) || [],
-      createdAt: new Date(o.createdAt).getTime()
-    };
   }
 }
 

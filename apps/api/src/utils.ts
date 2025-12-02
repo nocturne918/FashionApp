@@ -51,7 +51,7 @@ export function getStockXImage(url: string | null, width: number = 800): string 
       urlObj.searchParams.set('q', '90');
       return urlObj.toString();
     }
-  } catch (e) {
+  } catch {
     // Invalid URL, return original
   }
 

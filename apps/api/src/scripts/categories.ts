@@ -118,7 +118,6 @@ export const CATEGORY_TREE: CategoryNode[] = [
           { "name": "Pouches", "slug": "pouches" },
           { "name": "Shoulder Bag", "slug": "shoulder-bag" },
           { "name": "Messenger", "slug": "messenger" },
-          { "name": "Top Handle", "slug": "top-handle" },
           { "name": "Luggage", "slug": "luggage" },
           { "name": "Travel Accessories", "slug": "travel-accessories" },
           { "name": "Laptop Bags & Briefcases", "slug": "laptop-bags-and-briefcases" },

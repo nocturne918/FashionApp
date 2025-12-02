@@ -6,8 +6,5 @@
   "types": "src/index.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json"
-  },
-  "devDependencies": {
-    "zod": "^3.22.2"
   }
 }

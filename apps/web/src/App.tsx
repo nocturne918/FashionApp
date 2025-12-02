@@ -26,7 +26,9 @@ const AppContent = () => {
     }
     return [];
   });
-  const [currentOutfitItems, setCurrentOutfitItems] = useState<OutfitItem[]>([]);
+  const [currentOutfitItems, setCurrentOutfitItems] = useState<OutfitItem[]>(
+    []
+  );
   const [savedOutfits, setSavedOutfits] = useState<Outfit[]>(() => {
     const saved = localStorage.getItem("fitted_outfits");
     if (saved) {
@@ -69,7 +71,10 @@ const AppContent = () => {
           });
         }
       } catch (e) {
-        console.warn("Could not fetch server outfits, falling back to local", e);
+        console.warn(
+          "Could not fetch server outfits, falling back to local",
+          e
+        );
       }
     })();
     return () => {
@@ -144,7 +149,10 @@ const AppContent = () => {
         ...created,
         items: created.items?.length > 0 ? created.items : newOutfit.items,
       };
-      setSavedOutfits((prev) => [merged, ...prev.filter((o) => o.id !== tempId)]);
+      setSavedOutfits((prev) => [
+        merged,
+        ...prev.filter((o) => o.id !== tempId),
+      ]);
       alert("Outfit saved to server and Stash!");
     } catch (e) {
       console.warn("Failed to save outfit to server, kept locally", e);

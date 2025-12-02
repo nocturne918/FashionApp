@@ -1,16 +1,6 @@
-import type { Product, Outfit } from '@fashionapp/shared';
+import type { Product, Outfit, PaginatedResponse } from '@fashionapp/shared';
 
 const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:3000') + '/api';
-
-interface PaginatedResponse<T> {
-  data: T[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
-}
 
 interface ProductFilters {
   page?: number;
@@ -52,71 +42,37 @@ class ApiService {
     }
     if (filters.brand) params.append('brand', filters.brand);
 
-    const response = await this.fetch<PaginatedResponse<any>>(`/products?${params.toString()}`);
-
-    const data = response.data.map(this.transformProduct);
-
-    return { ...response, data };
+    return this.fetch<PaginatedResponse<Product>>(`/products?${params.toString()}`);
   }
 
   async getProduct(id: string): Promise<Product> {
-    const product = await this.fetch<any>(`/products/${id}`);
-    return this.transformProduct(product);
+    return this.fetch<Product>(`/products/${id}`);
   }
 
   // Outfits
   async getOutfits(): Promise<Outfit[]> {
-    const outfits = await this.fetch<any[]>('/outfits');
-    return outfits.map(this.transformOutfit);
+    return this.fetch<Outfit[]>('/outfits');
   }
 
   async getOutfit(id: string): Promise<Outfit> {
-    const outfit = await this.fetch<any>(`/outfits/${id}`);
-    return this.transformOutfit(outfit);
+    return this.fetch<Outfit>(`/outfits/${id}`);
   }
 
   async createOutfit(outfit: Partial<Outfit>): Promise<Outfit> {
-    // Transform frontend outfit to backend payload
     const payload = {
       title: outfit.name,
       description: 'Created via FITTED Lab',
       isPublic: false,
       items: outfit.items?.map((item, index) => ({
         productId: item.id,
-        slot: `slot_${index}` // Simple slot assignment
+        slot: `slot_${index}`
       }))
     };
 
-    const newOutfit = await this.fetch<any>('/outfits', {
+    return this.fetch<Outfit>('/outfits', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
-
-    return this.transformOutfit(newOutfit);
-  }
-
-  // Transformers
-  private transformProduct(p: any): Product {
-    return {
-      id: p.id,
-      name: p.title,
-      brand: p.brand,
-      price: p.lowestAsk || p.retailPrice || 0,
-      category: p.category, // Ensure enum match or map
-      imageUrl: p.imageUrl,
-      department: (p.gender?.toUpperCase() as any) || 'UNISEX',
-      color: p.colorway || 'Multi',
-      tags: [] // Backend might not have tags yet
-    };
-  }
-
-  private transformOutfit(o: any): Outfit {
-    return {
-      id: o.id,
-      name: o.title,
-      items: o.items?.map((i: any) => this.transformProduct(i.product)) || [],
-      createdAt: new Date(o.createdAt).getTime()
-    };
   }
 }
 

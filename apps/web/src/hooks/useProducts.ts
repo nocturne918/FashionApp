@@ -37,6 +37,7 @@ export const useProducts = (initialOptions: UseProductsOptions = {}) => {
   useEffect(() => {
     setPage(1);
     fetchProducts({ ...initialOptions, page: 1 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     initialOptions.search,
     initialOptions.category,

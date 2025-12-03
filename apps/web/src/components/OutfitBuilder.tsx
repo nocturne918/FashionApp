@@ -775,6 +775,25 @@ Generate the edited image showing the person wearing these items.`;
           imageUrl: editedImage,
         });
         setUploadedPersonImage(editedImage);
+      } else {
+        // If no personImageItem exists, create one with the generated image
+        const canvas = canvasRef.current;
+        let centerX = 400;
+        let centerY = 300;
+        if (canvas) {
+          const canvasRect = canvas.getBoundingClientRect();
+          centerX = canvasRect.width / 2 - 200;
+          centerY = canvasRect.height / 2 - 300;
+        }
+        setPersonImageItem({
+          imageUrl: editedImage,
+          x: centerX,
+          y: centerY,
+          scale: 1,
+          rotation: 0,
+          zIndex: 0,
+        });
+        setUploadedPersonImage(editedImage);
       }
 
       // Remove all clothing items from canvas since they're now part of the generated image

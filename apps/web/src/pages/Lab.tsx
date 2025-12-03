@@ -396,11 +396,24 @@ export const Lab: React.FC<LabProps> = ({
         const items = grouped[slot];
         const idx = indices[slot] ?? 0;
         if (items && items.length > 0 && items[idx]) {
-          componentsItems.push(items[idx] as OutfitItem);
+          const product = items[idx];
+          // Convert Product to OutfitItem format
+          const outfitItem: OutfitItem = {
+            ...product,
+            x: 0,
+            y: 0,
+            scale: 1,
+            rotation: 0,
+            zIndex: 1,
+          };
+          componentsItems.push(outfitItem);
         }
       });
 
       console.log("Saving outfit with image from Components section...");
+      console.log("Components items count:", componentsItems.length);
+      console.log("Image URL:", imageUrl ? "Present" : "Missing");
+      console.log("ImageSource:", "components");
       // Pass the components items directly to saveOutfit with 'components' source
       saveOutfit(imageUrl, componentsItems, "components");
 
@@ -494,13 +507,22 @@ export const Lab: React.FC<LabProps> = ({
                   stashedProducts.map((p) => (
                     <div
                       key={p.id}
-                      className="border p-2 cursor-pointer"
+                      className="border p-2 cursor-pointer relative group"
                       onClick={() => addToFit(p)}
                     >
                       <img
                         src={p.imageUrl}
                         className="w-full h-20 object-contain"
                       />
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          _toggleStash(p);
+                        }}
+                        className="absolute top-1 right-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <Icon icon="lucide:trash-2" width="16" height="16" />
+                      </button>
                     </div>
                   ))
                 )}

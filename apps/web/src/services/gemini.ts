@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
 // Gemini API key 
-const API_KEY = "AIzaSyDXeGs8gvWEagVN1_h_vH8ssXO17vhHwzI";
+const API_KEY = "AIzaSyBYKwFiN9FWjg4M1hM3RozCkmYVH90i-uE";
 
 if (!API_KEY) {
   console.warn(

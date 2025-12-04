@@ -25,12 +25,16 @@ export const Stash: React.FC<StashProps> = ({
   toggleStash,
 }) => {
   const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
+  const [previewProductUrlKey, setPreviewProductUrlKey] = useState<
+    string | null
+  >(null);
   const [detectedColors, setDetectedColors] = useState<string | null>(null);
   const [analyzingColors, setAnalyzingColors] = useState(false);
   const [detectedStyles, setDetectedStyles] = useState<string | null>(null);
   const [analyzingStyles, setAnalyzingStyles] = useState(false);
   const [previewOutfit, setPreviewOutfit] = useState<Outfit | null>(null);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
+  const [outfitItemUrlKey, setOutfitItemUrlKey] = useState<string | null>(null);
   const [outfitDetectedColors, setOutfitDetectedColors] = useState<
     string | null
   >(null);
@@ -144,10 +148,26 @@ export const Stash: React.FC<StashProps> = ({
 
         analyzeItemColors();
         analyzeItemStyles();
+
+        // Fetch product details to get urlKey
+        const fetchProductUrlKey = async () => {
+          try {
+            const { api } = await import("../services/api");
+            const fullProduct = (await api.getProduct(
+              currentItem.id
+            )) as Product & { urlKey?: string };
+            setOutfitItemUrlKey(fullProduct.urlKey || null);
+          } catch (error) {
+            console.error("Error fetching product details:", error);
+            setOutfitItemUrlKey(null);
+          }
+        };
+        fetchProductUrlKey();
       }
     } else {
       setOutfitDetectedColors(null);
       setOutfitDetectedStyles(null);
+      setOutfitItemUrlKey(null);
     }
   }, [previewOutfit, currentItemIndex]);
 
@@ -211,6 +231,7 @@ export const Stash: React.FC<StashProps> = ({
                 onClick={() => {
                   setPreviewOutfit(outfit);
                   setCurrentItemIndex(0);
+                  setOutfitItemUrlKey(null);
                 }}
               >
                 <div className="flex justify-between items-center mb-2">
@@ -373,7 +394,20 @@ export const Stash: React.FC<StashProps> = ({
               <div
                 key={product.id}
                 className="border-2 border-black bg-white hard-shadow p-3 relative group cursor-pointer"
-                onClick={() => setPreviewProduct(product)}
+                onClick={async () => {
+                  setPreviewProduct(product);
+                  // Fetch full product details to get urlKey
+                  try {
+                    const { api } = await import("../services/api");
+                    const fullProduct = (await api.getProduct(
+                      product.id
+                    )) as Product & { urlKey?: string };
+                    setPreviewProductUrlKey(fullProduct.urlKey || null);
+                  } catch (error) {
+                    console.error("Error fetching product details:", error);
+                    setPreviewProductUrlKey(null);
+                  }
+                }}
               >
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-bold text-sm uppercase truncate">
@@ -406,7 +440,10 @@ export const Stash: React.FC<StashProps> = ({
       {previewProduct && (
         <div
           className="fixed inset-0 bg-white bg-opacity-95 z-50 flex items-center justify-center p-4"
-          onClick={() => setPreviewProduct(null)}
+          onClick={() => {
+            setPreviewProduct(null);
+            setPreviewProductUrlKey(null);
+          }}
         >
           <div
             className="bg-white border-4 border-black hard-shadow max-w-4xl w-full max-h-[90vh] overflow-auto"
@@ -425,7 +462,10 @@ export const Stash: React.FC<StashProps> = ({
               {/* Details Section - Right Side */}
               <div className="md:w-1/2 p-8 flex flex-col relative">
                 <button
-                  onClick={() => setPreviewProduct(null)}
+                  onClick={() => {
+                    setPreviewProduct(null);
+                    setPreviewProductUrlKey(null);
+                  }}
                   className="absolute top-4 right-4 text-gray-400 hover:text-black z-10"
                 >
                   <Icon icon="lucide:x" width="24" height="24" />
@@ -470,9 +510,27 @@ export const Stash: React.FC<StashProps> = ({
                     )}
                   </div>
                   <div className="pt-4 border-t-2 border-black">
-                    <p className="text-2xl font-bold">
-                      ${previewProduct.price.toFixed(2)}
-                    </p>
+                    <div className="flex items-center gap-4">
+                      <p className="text-2xl font-bold">
+                        ${previewProduct.price.toFixed(2)}
+                      </p>
+                      {previewProductUrlKey && (
+                        <a
+                          href={`https://stockx.com/${previewProductUrlKey}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="border-2 border-black bg-black text-white font-bold text-sm px-4 py-2 uppercase hover:bg-gray-800 active:bg-gray-900 transition-colors flex items-center gap-2"
+                        >
+                          <Icon
+                            icon="lucide:external-link"
+                            width="16"
+                            height="16"
+                          />
+                          Buy it
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -490,6 +548,7 @@ export const Stash: React.FC<StashProps> = ({
             onClick={() => {
               setPreviewOutfit(null);
               setCurrentItemIndex(0);
+              setOutfitItemUrlKey(null);
             }}
           >
             <div
@@ -554,6 +613,7 @@ export const Stash: React.FC<StashProps> = ({
                       onClick={() => {
                         setPreviewOutfit(null);
                         setCurrentItemIndex(0);
+                        setOutfitItemUrlKey(null);
                       }}
                       className="absolute top-4 right-4 text-gray-400 hover:text-black z-10"
                     >
@@ -605,12 +665,30 @@ export const Stash: React.FC<StashProps> = ({
                         )}
                       </div>
                       <div className="pt-4 border-t-2 border-black">
-                        <p className="text-2xl font-bold">
-                          $
-                          {previewOutfit.items[currentItemIndex].price.toFixed(
-                            2
+                        <div className="flex items-center gap-4">
+                          <p className="text-2xl font-bold">
+                            $
+                            {previewOutfit.items[
+                              currentItemIndex
+                            ].price.toFixed(2)}
+                          </p>
+                          {outfitItemUrlKey && (
+                            <a
+                              href={`https://stockx.com/${outfitItemUrlKey}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="border-2 border-black bg-black text-white font-bold text-sm px-4 py-2 uppercase hover:bg-gray-800 active:bg-gray-900 transition-colors flex items-center gap-2"
+                            >
+                              <Icon
+                                icon="lucide:external-link"
+                                width="16"
+                                height="16"
+                              />
+                              Buy it
+                            </a>
                           )}
-                        </p>
+                        </div>
                       </div>
                       {/* Item counter */}
                       {previewOutfit.items.length > 1 && (

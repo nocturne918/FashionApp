@@ -60,7 +60,7 @@ export function getStockXImage(url: string | null, width: number = 800): string 
 
 import { Product, Department } from '@fashionapp/shared';
 
-export function toSharedProduct(p: any): Product {
+export function toSharedProduct(p: any): Product & { urlKey?: string } {
   return {
     id: p.id,
     name: p.title,
@@ -70,7 +70,8 @@ export function toSharedProduct(p: any): Product {
     imageUrl: getStockXImage(p.imageUrl) || '',
     department: (p.gender?.toUpperCase() as Department) || 'UNISEX',
     color: 'Multi', // Default as colorway is not in DB yet
-    tags: []
+    tags: [],
+    urlKey: p.urlKey || undefined
   };
 }
 

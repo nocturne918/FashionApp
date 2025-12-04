@@ -1,8 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
+import { env } from "../env";
 
 // Gemini API key 
-const API_KEY = "AIzaSyBYKwFiN9FWjg4M1hM3RozCkmYVH90i-uE";
+const API_KEY = env.VITE_GEMINI_API_KEY;
 
 if (!API_KEY) {
   console.warn(
@@ -13,7 +13,7 @@ if (!API_KEY) {
 const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
 
 
- //Get Gemini text response with image context
+//Get Gemini text response with image context
 
 export async function getGeminiResponse(
   prompt: string,
@@ -27,7 +27,7 @@ export async function getGeminiResponse(
     // Use Gemini 2.5 Flash for text/image analysis
     let model;
     let modelName = "gemini-2.5-flash";
-    
+
     try {
       model = genAI.getGenerativeModel({ model: modelName });
       console.log(`Using model: ${modelName}`);
@@ -39,7 +39,7 @@ export async function getGeminiResponse(
         "gemini-2.0-flash-thinking-exp",
         "gemini-1.5-pro",
       ];
-      
+
       for (const altModel of alternatives) {
         try {
           model = genAI.getGenerativeModel({ model: altModel });
@@ -50,7 +50,7 @@ export async function getGeminiResponse(
           continue;
         }
       }
-      
+
       if (!model) {
         throw new Error(`Failed to initialize Gemini model. Tried: ${modelName}, ${alternatives.join(", ")}`);
       }
@@ -106,7 +106,7 @@ export async function getGeminiResponse(
 }
 
 
- //Get Gemini image edit/generation using gemini  model
+//Get Gemini image edit/generation using gemini  model
 export async function getGeminiImageEdit(
   personImageUrl: string,
   clothingImageUrls: string[],
@@ -124,8 +124,8 @@ export async function getGeminiImageEdit(
 
     // Use Gemini 2.5 Flash Image (Nano Banana)
     let model;
-    let modelName = "gemini-2.5-flash-image"; 
-    
+    let modelName = "gemini-2.5-flash-image";
+
     try {
       model = genAI.getGenerativeModel({ model: modelName });
       console.log(`Using model: ${modelName}`);
@@ -141,7 +141,7 @@ export async function getGeminiImageEdit(
         throw new Error(`Failed to initialize Gemini model. Tried: gemini-2.5-flash-image, gemini-2.5-flash`);
       }
     }
-    
+
     if (!model) {
       throw new Error("Failed to initialize Gemini model");
     }
@@ -182,7 +182,7 @@ export async function getGeminiImageEdit(
 
     console.log("Calling Gemini API with model:", modelName);
     // Use Gemini to generate the edited image
-    
+
     const result = await model.generateContent({
       contents: [
         {
@@ -198,27 +198,27 @@ export async function getGeminiImageEdit(
     console.log("Received response from Gemini");
     const response = result.response;
     console.log("Response structure:", JSON.stringify(response, null, 2).substring(0, 1000));
-    
+
     // Check if the response contains an image 
     if (response.candidates && response.candidates.length > 0) {
       const candidate = response.candidates[0];
       console.log("Candidate structure:", JSON.stringify(candidate, null, 2).substring(0, 500));
-      
+
       if (candidate.content && candidate.content.parts) {
         const parts = candidate.content.parts;
         console.log("Response parts count:", parts.length);
-        
+
         // Look for image data in the response parts
         for (const part of parts) {
           console.log("Part type:", typeof part, "Keys:", Object.keys(part || {}));
-          
+
           // Check for inlineData 
           if (part && (part as any).inlineData && (part as any).inlineData.data) {
             console.log("Found image in inlineData!");
             const mimeType = (part as any).inlineData.mimeType || "image/jpeg";
             return `data:${mimeType};base64,${(part as any).inlineData.data}`;
           }
-          
+
           // Check for functionCall or other response types
           if (part && (part as any).functionCall) {
             console.log("Found functionCall in response");
@@ -231,14 +231,14 @@ export async function getGeminiImageEdit(
     try {
       const textResponse = response.text();
       console.log("Response text (first 500 chars):", textResponse.substring(0, 500));
-      
+
       // Check if response contains a base64 image data URL
       const base64Match = textResponse.match(/data:image\/[^;]+;base64,([A-Za-z0-9+/=]+)/);
       if (base64Match) {
         console.log("Found base64 image in text response");
         return base64Match[0];
       }
-      
+
       // If we got text but no image, the model might not support image generation
       console.warn("Gemini returned text but no image. Full response:", textResponse);
       throw new Error(`Gemini model ${modelName} returned text instead of an image. This model may not support image generation. Response: ${textResponse.substring(0, 200)}`);

@@ -9,13 +9,15 @@ const possiblePaths = [
 
 const envPath = possiblePaths.find(p => existsSync(p));
 
-if (!envPath) {
+if (!envPath && !process.env.DATABASE_URL) {
   throw new Error(`.env file not found. Tried: ${possiblePaths.join(', ')}`);
 }
 
-// Load environment variables from .env file
-dotenv.config({ path: envPath });
-console.log(`Loaded .env from: ${envPath}`);
+// Load environment variables from .env file if it exists
+if (envPath) {
+  dotenv.config({ path: envPath });
+  console.log(`Loaded .env from: ${envPath}`);
+}
 
 // Export environment variables with type safety
 export const env = {

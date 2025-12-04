@@ -3,6 +3,7 @@ import { Logo } from "./Logo";
 import { Icon } from "@iconify/react";
 import { authClient } from "../lib/auth-client";
 import { useAuth } from "../contexts/AuthContext";
+import { env } from "../env";
 
 interface LoginViewProps {
   onSwitchToSignup: () => void;
@@ -33,7 +34,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSwitchToSignup }) => {
       // Report failed attempt to server so it can increment counters and lock if needed
       try {
         const resp = await fetch(
-          (import.meta.env.VITE_API_URL || "http://localhost:3000") +
+          env.VITE_API_URL +
             "/api/auth/failed-attempt",
           {
             method: "POST",
@@ -257,8 +258,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSwitchToSignup }) => {
                     setForgotMessage("");
                     try {
                       const resp = await fetch(
-                        (import.meta.env.VITE_API_URL ||
-                          "http://localhost:3000") + "/api/auth/password-reset",
+                        env.VITE_API_URL + "/api/auth/password-reset",
                         {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },
@@ -295,8 +295,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSwitchToSignup }) => {
                     setForgotMessage("");
                     try {
                       const resp = await fetch(
-                        (import.meta.env.VITE_API_URL ||
-                          "http://localhost:3000") + "/api/auth/reset-lock",
+                        env.VITE_API_URL + "/api/auth/reset-lock",
                         {
                           method: "POST",
                           headers: { "Content-Type": "application/json" },

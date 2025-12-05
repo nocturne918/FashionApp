@@ -249,7 +249,6 @@ export const Lab: React.FC<LabProps> = ({
     if (!items || items.length === 0) return;
     const idx = indices[slot] ?? 0;
     const selected = items[idx];
-    const slotIdx = SLOTS.indexOf(slot);
     const container = leftRef.current;
     let x = 300,
       y = 120;
@@ -268,9 +267,25 @@ export const Lab: React.FC<LabProps> = ({
       placed: true,
     };
     setCurrentOutfitItems((prev) => {
-      const copy = [...prev];
-      copy[slotIdx] = positioned;
-      return copy;
+      // Ensure we work with a valid array
+      const prevArray = Array.isArray(prev) ? prev : [];
+
+      // Simple approach: just append like addToFit does
+      // Items have x,y positions set based on their slot, so array order doesn't matter
+      // Check if this exact item (by ID) already exists to avoid duplicates
+      const existingIndex = prevArray.findIndex(
+        (item) => item?.id === positioned.id
+      );
+
+      if (existingIndex >= 0) {
+        // Item already exists, replace it at the same position
+        const newArray = [...prevArray];
+        newArray[existingIndex] = positioned;
+        return newArray;
+      } else {
+        // Append the new item - simple and works consistently for all slots
+        return [...prevArray, positioned];
+      }
     });
   };
 

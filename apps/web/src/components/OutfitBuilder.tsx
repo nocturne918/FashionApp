@@ -52,6 +52,17 @@ export const OutfitBuilder: React.FC<OutfitBuilderProps> = ({
     rotation: number;
     zIndex: number;
   } | null>(null);
+
+  // Debug: Log when personImageItem changes
+  useEffect(() => {
+    console.log("personImageItem state changed:", {
+      exists: !!personImageItem,
+      hasImageUrl: !!personImageItem?.imageUrl,
+      imageUrlLength: personImageItem?.imageUrl?.length,
+      x: personImageItem?.x,
+      y: personImageItem?.y,
+    });
+  }, [personImageItem]);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [geminiLoading, setGeminiLoading] = useState(false);
 
@@ -98,7 +109,7 @@ export const OutfitBuilder: React.FC<OutfitBuilderProps> = ({
     }
   };
 
-  // Load state from localStorage
+  // Load state from localStorage (only on mount)
   useEffect(() => {
     try {
       const savedPersonImage = localStorage.getItem("lab_personImageItem");
@@ -485,9 +496,7 @@ export const OutfitBuilder: React.FC<OutfitBuilderProps> = ({
           }
 
           // the first upload as the person image
-          if (!uploadedPersonImage && index === 0) {
-            setUploadedPersonImage(imageUrl);
-
+          if (index === 0) {
             // Create a person image item that can be manipulated
             const canvas = canvasRef.current;
             let centerX = 400;
@@ -499,15 +508,34 @@ export const OutfitBuilder: React.FC<OutfitBuilderProps> = ({
               centerY = canvasRect.height / 2 - 300;
             }
 
-            setPersonImageItem({
+            // Set both states to ensure the image appears
+            const newPersonImageItem = {
               imageUrl: imageUrl,
               x: centerX,
               y: centerY,
               scale: 1,
               rotation: 0,
-              zIndex: 0,
+              zIndex: 0, // Changed from -1 to 0 to ensure visibility
+            };
+
+            // Update state - use React 18 automatic batching to ensure updates happen together
+            console.log("Setting person image item:", {
+              imageUrl: imageUrl.substring(0, 50) + "...",
+              x: centerX,
+              y: centerY,
+              canvasExists: !!canvas,
+              imageUrlLength: imageUrl.length,
             });
-            console.log("Set uploaded person image");
+
+            // Batch state updates
+            setUploadedPersonImage(imageUrl);
+            setPersonImageItem(newPersonImageItem);
+            setSelectedPersonImage(true);
+            setSelectedId(null);
+
+            console.log(
+              "State updates queued, person image should appear shortly"
+            );
           } else {
             // Create a new OutfitItem from the uploaded image
             // Remove extension
@@ -766,10 +794,12 @@ Generate the edited image showing the person wearing these items.`;
         clothingImages,
         prompt
       );
+      // Set the generated image first
       setGeneratedImage(editedImage);
 
       // Replace the person image with the generated image in the same position
       if (personImageItem) {
+        // Keep existing position and properties, just update the image URL
         setPersonImageItem({
           ...personImageItem,
           imageUrl: editedImage,
@@ -791,13 +821,19 @@ Generate the edited image showing the person wearing these items.`;
           y: centerY,
           scale: 1,
           rotation: 0,
-          zIndex: 0,
+          zIndex: 0, // Set to 0 instead of -1 to ensure visibility
         });
         setUploadedPersonImage(editedImage);
       }
 
       // Remove all clothing items from canvas since they're now part of the generated image
       setItems([]);
+
+      // Ensure person image is selected so it's visible - use setTimeout to ensure state updates complete
+      setTimeout(() => {
+        setSelectedPersonImage(true);
+        setSelectedId(null);
+      }, 100);
     } catch (error) {
       console.error("Error generating try-on image:", error);
       const errorMsg = error instanceof Error ? error.message : String(error);
@@ -1069,6 +1105,7 @@ Generate the edited image showing the person wearing these items.`;
         {/* Display uploaded person image as interactive element */}
         {personImageItem && personImageItem.imageUrl && (
           <div
+            key={`person-image-${personImageItem.imageUrl.length}-${personImageItem.x}-${personImageItem.y}`} // Force re-render when image URL or position changes
             className={`absolute cursor-move select-none ${
               selectedPersonImage ? "ring-2 ring-blue-600 ring-offset-2" : ""
             }`}
@@ -1079,7 +1116,8 @@ Generate the edited image showing the person wearing these items.`;
                 personImageItem.rotation ?? 0
               }deg)`,
               transformOrigin: "center center",
-              zIndex: personImageItem.zIndex ?? 0,
+              zIndex: Math.max(0, personImageItem.zIndex ?? 0), // Ensure zIndex is at least 0 for visibility
+              backgroundColor: "transparent", // Ensure background doesn't hide content
             }}
             onMouseDown={handlePersonImageMouseDown}
             onClick={(e) => {
@@ -1092,10 +1130,28 @@ Generate the edited image showing the person wearing these items.`;
               src={personImageItem.imageUrl}
               alt="Person"
               className="max-w-md max-h-md object-contain"
-              style={{ pointerEvents: "none" }}
+              style={{
+                pointerEvents: "none",
+                display: "block", // Ensure image is displayed
+                maxWidth: "500px",
+                maxHeight: "500px",
+              }}
+              onLoad={() => {
+                console.log("Person image loaded successfully:", {
+                  width: "loaded",
+                  x: personImageItem.x,
+                  y: personImageItem.y,
+                });
+              }}
               onError={(e) => {
-                console.error("Error loading person image");
-                e.currentTarget.style.display = "none";
+                console.error(
+                  "Error loading person image:",
+                  personImageItem.imageUrl?.substring(0, 50)
+                );
+                // Don't hide on error, show a placeholder instead
+                e.currentTarget.style.backgroundColor = "#ff0000";
+                e.currentTarget.style.width = "200px";
+                e.currentTarget.style.height = "200px";
               }}
             />
           </div>

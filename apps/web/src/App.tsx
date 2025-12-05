@@ -203,14 +203,24 @@ const AppContent = () => {
         }
       }
 
+      // Ensure items is a valid array
+      const validItems = Array.isArray(items) && items.length > 0 ? items : [];
+
       const newOutfit: Outfit = {
         id: Date.now().toString(),
         name: `Fit #${savedOutfits.length + 1}`,
-        items: items,
+        items: validItems,
         createdAt: Date.now(),
         imageUrl: finalImageUrl,
-        imageSource: imageSource,
+        imageSource: imageSource || "edited", // Default to "edited" if not provided
       };
+
+      console.log("Saving outfit:", {
+        name: newOutfit.name,
+        itemsCount: newOutfit.items.length,
+        hasImage: !!newOutfit.imageUrl,
+        imageSource: newOutfit.imageSource,
+      });
 
       // Log what we're saving
       if (finalImageUrl) {
@@ -240,13 +250,20 @@ const AppContent = () => {
         return next;
       });
 
-      // save locally
+      // save locally FIRST to ensure it's saved even if server save fails
       setSavedOutfits((prev) => {
         const next = [newOutfit, ...prev];
         try {
           localStorage.setItem("fitted_outfits", JSON.stringify(next));
-        } catch {
-          // Ignore localStorage errors
+          console.log("Saved outfit to localStorage:", {
+            outfitId: newOutfit.id,
+            imageSource: newOutfit.imageSource,
+            itemsCount: newOutfit.items.length,
+            totalOutfits: next.length,
+          });
+        } catch (e) {
+          console.error("Failed to save to localStorage:", e);
+          // Don't ignore - this is critical
         }
         return next;
       });
@@ -254,15 +271,33 @@ const AppContent = () => {
 
       try {
         const created = await api.createOutfit(newOutfit);
-        const merged = {
+        // Always preserve items and imageSource from the local outfit
+        // Server might not return items or imageSource in the format we need
+        const merged: Outfit = {
           ...created,
-          items: created.items?.length > 0 ? created.items : newOutfit.items,
-          imageUrl: finalImageUrl || created.imageUrl,
+          items:
+            newOutfit.items.length > 0 ? newOutfit.items : created.items || [],
+          imageUrl: finalImageUrl || created.imageUrl || newOutfit.imageUrl,
+          imageSource: newOutfit.imageSource, // Always preserve imageSource from local outfit
         };
-        setSavedOutfits((prev) => [
-          merged,
-          ...prev.filter((o) => o.id !== newOutfit.id),
-        ]);
+        setSavedOutfits((prev) => {
+          // Remove the temporary local outfit and add the merged one
+          const filtered = prev.filter((o) => o.id !== newOutfit.id);
+          return [merged, ...filtered];
+        });
+        // Also update localStorage with the merged outfit
+        try {
+          const current = JSON.parse(
+            localStorage.getItem("fitted_outfits") || "[]"
+          );
+          const updated = [
+            merged,
+            ...current.filter((o: Outfit) => o.id !== newOutfit.id),
+          ];
+          localStorage.setItem("fitted_outfits", JSON.stringify(updated));
+        } catch (e) {
+          console.warn("Failed to update localStorage:", e);
+        }
         alert("Outfit saved to server and Stash!");
       } catch (e) {
         console.warn("Failed to save outfit to server, kept locally", e);

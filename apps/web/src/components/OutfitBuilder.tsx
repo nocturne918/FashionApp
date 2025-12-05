@@ -888,9 +888,9 @@ Generate the edited image showing the person wearing these items.`;
                   personImageItem.imageUrl !== uploadedPersonImage
                     ? personImageItem.imageUrl
                     : undefined);
-                // If there's a generatedImage, it's from Edit Image
-                // Otherwise, it's from Save Fit on canvas
-                const source = generatedImage ? "edited" : "canvas";
+                // Save Fit always saves as "edited" to appear in Saved Outfits section
+                // This includes both edited images and canvas items
+                const source = "edited";
                 onSaveOutfit(imageToSave, undefined, source);
               } catch (error) {
                 console.error("Error in save button:", error);
